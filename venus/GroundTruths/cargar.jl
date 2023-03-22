@@ -1,5 +1,3 @@
-import Base.display 
-import Pkg
 using DelimitedFiles
 using JLD2
 using Images
@@ -7,7 +5,6 @@ using Plots
 using Colors
 using FileIO
 using Images
-using ImageView
 using NaturalSort
 
 include("funciones.jl")
@@ -82,9 +79,9 @@ println()
 =#
 return
 
-img_path = "/home/javi/Venus_AA/venus"
-hit_path = "/home/javi/Venus_AA/venus/hit"
-miss_path = "/home/javi/Venus_AA/venus/miss"
+img_path = mycd*"Venus_AA/venus"
+hit_path = mycd*"Venus_AA/venus/hit"
+miss_path = mycd*"Venus_AA/venus/miss"
 
 function count(dir::String)
     content = readdir(dir)
@@ -147,7 +144,7 @@ for i=1:size_data
     end
 end
 
-imshow(positive_images[1])
+display(positive_images[1])
 
 # Recorrer dataset_4
     # Para cada dataset_4[i], aplicarle a images[i] los recortes y apilarlos en positive_images[] de la siguiente manera push!(positive_images, recorte)
@@ -159,3 +156,28 @@ imshow(positive_images[1])
 # matrix_cut = matrix_c[coord[1],coord[2]]
 
 # println(matrix_cut)
+
+# Crear el directorio si no existe
+if !isdir("imagenes_positivas")
+    mkdir("imagenes_positivas")
+end
+global cont = 1
+for image in positive_images
+# Guardar la imagen en el directorio
+name = "recorte"*string(cont)*".png"
+save(joinpath("imagenes_positivas", name), image)
+global cont = cont+1
+end
+
+# Crear el directorio si no existe
+if !isdir("imagenes_negativas")
+    mkdir("imagenes_negativas")
+end
+global cont = 1
+for image in negative_images
+# Guardar la imagen en el directorio
+name = "recorte"*string(cont)*".png"
+save(joinpath("imagenes_negativas", name), image)
+global cont = cont+1
+end
+
