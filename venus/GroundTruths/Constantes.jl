@@ -1,0 +1,1 @@
+K_MULTIPLIER = 2 # Multiplicador para aumentar el radio de recorte establecido por los expertos

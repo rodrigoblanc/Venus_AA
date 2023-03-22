@@ -11,6 +11,9 @@ using ImageView
 
 include("funciones.jl")
 
+# Debe ser común a todos los PC's
+cd("~/Venus_AA/venus/GroundTruths")
+
 #Guardamos el directorio actual
 files_and_dirs = readdir()
 for f in files_and_dirs
@@ -30,7 +33,6 @@ for count in 1:134
     name = "img"*string(count)*".lxyr"
     if isfile(name) #Checkeamos si existe
         matrix = readdlm(name)
-        println("gg")
         push!(dataset, matrix)
         #global dataset = vcat(dataset, matrix) #Concatenamos verticalmente la matriz con el dataset
     else
@@ -79,9 +81,9 @@ println()
 =#
 return
 
-img_path = "/home/javi/AA/venus"
-hit_path = "/home/javi/AA/venus/hit"
-miss_path = "/home/javi/AA/venus/miss"
+img_path = "~/Venus_AA/venus"
+hit_path = "~/Venus_AA/venus/hit"
+miss_path = "~/Venus_AA/venus/miss"
 
 function count(dir::String)
     content = readdir(dir)
@@ -102,8 +104,9 @@ end
 
 function loadFolderImages(folderName::String)
     images = [];
-    files = readdir(folderName)
+    files = sort(readdir(folderName), lt=natural)
     filter!(endswith(".png"), files)
+    println(files)
     for fileName in files
         image = load(img_path*"/"*fileName);
             
