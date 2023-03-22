@@ -132,7 +132,7 @@ for i=1:size_data
     for j=1:(size(dataset_4[i], 1))
         println(dataset_4[i][j])
         recorte = dataset_4[i][j][2:4]
-        push!(positive_images, recortar(recorte, matrix[i]))
+        push!(negative_images, recortar(recorte, matrix[i]))
     end
 end
 
@@ -140,7 +140,7 @@ for i=1:size_data
     for j=1:(size(dataset_1[i], 1))
         println(dataset_1[i][j])
         recorte = dataset_1[i][j][2:4]
-        push!(negative_images, recortar(recorte, matrix[i]))
+        push!(positive_images, recortar(recorte, matrix[i]))
     end
 end
 
