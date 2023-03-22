@@ -1,4 +1,9 @@
 include("Constantes.jl")
+include("personal.jl")
+
+function ccd(relativeLocation::String)
+    cd(mycd*relativeLocation)
+end
 
 function recortar(area, imagen)
     

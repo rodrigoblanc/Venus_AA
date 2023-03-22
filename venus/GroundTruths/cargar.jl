@@ -8,11 +8,12 @@ using Colors
 using FileIO
 using Images
 using ImageView
+using NaturalSort
 
 include("funciones.jl")
 
 # Debe ser común a todos los PC's
-cd("~/Venus_AA/venus/GroundTruths")
+ccd("Venus_AA/venus/GroundTruths")
 
 #Guardamos el directorio actual
 files_and_dirs = readdir()
@@ -81,9 +82,9 @@ println()
 =#
 return
 
-img_path = "~/Venus_AA/venus"
-hit_path = "~/Venus_AA/venus/hit"
-miss_path = "~/Venus_AA/venus/miss"
+img_path = "/home/javi/Venus_AA/venus"
+hit_path = "/home/javi/Venus_AA/venus/hit"
+miss_path = "/home/javi/Venus_AA/venus/miss"
 
 function count(dir::String)
     content = readdir(dir)
