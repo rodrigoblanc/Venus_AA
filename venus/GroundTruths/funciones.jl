@@ -6,6 +6,8 @@ function ccd(relativeLocation::String)
 end
 
 function recortar(area, imagen)
+
+    imshow(imagen)
     
     # El radio se redondea hacia arriba para abarcar más area de la que abarcariamos de poder considerar los flotantes
     image_size = size(imagen)

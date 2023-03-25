@@ -1,1 +1,0 @@
-mycd ="/mnt/d/UNIVERSIDAD/TERCERO/Segundo Cuatri/AA/Practica/"
