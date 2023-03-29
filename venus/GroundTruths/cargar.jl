@@ -11,6 +11,14 @@ using Images
 
 include("funciones.jl")
 
+# PATHS
+
+pattern_path = mycd*"Venus_AA/venus/GroundTruths/Patrones"
+img_path = mycd*"Venus_AA/venus/imagenes"
+hit_path = mycd*"Venus_AA/venus/hit"
+miss_path = mycd*"Venus_AA/venus/miss"
+
+
 # Args
 
 # Número de imágenes a procesar
@@ -26,13 +34,14 @@ for i=1:(size(ARGS,1))
     end
 end 
 # Debe ser común a todos los PC's
-ccd("Venus_AA/venus/GroundTruths/dataset_etiquetado")
+#ccd("Venus_AA/venus/GroundTruths/dataset_etiquetado")
 
 #Guardamos el directorio actual
-files_and_dirs = readdir()
+files_and_dirs = readdir(pattern_path)
+println(files_and_dirs)
 for f in files_and_dirs
-    if filesize(f) < 3
-        rm(f)
+    if filesize(pattern_path*"/"*f) < 3
+        rm(pattern_path*"/"*f)
     end
 end
 
@@ -45,8 +54,8 @@ global dataset = []
 #134 = Numero maximo que queremos leer
 for count in 1:numberOfImages
     name = "img"*string(count)*".lxyr"
-    if isfile(name) #Checkeamos si existe
-        matrix = readdlm(name)
+    if isfile(pattern_path*"/"*name) #Checkeamos si existe
+        matrix = readdlm(pattern_path*"/"*name)
         push!(dataset, matrix)
         #global dataset = vcat(dataset, matrix) #Concatenamos verticalmente la matriz con el dataset
     else
@@ -73,6 +82,8 @@ for i=1:size_data
     push!(negative_dataset, aux)
 end
 
+println("Size data negative "*string(size(negative_dataset, 1)))
+
 positive_dataset = []
 #Ahora creamos una matriz que guarde lo que fijo son volcanes (1) y los que no (4)
 for i=1:size_data
@@ -94,10 +105,6 @@ println()
 #Ahora mismo el dataset es una matriz con todos los patrones
 =#
 return
-
-img_path = mycd*"Venus_AA/venus/imagenes"
-hit_path = mycd*"Venus_AA/venus/hit"
-miss_path = mycd*"Venus_AA/venus/miss"
 
 function count(dir::String)
     content = readdir(dir)
@@ -146,6 +153,7 @@ positive_images = []
 negative_images = []
 
 for i=1:size_data
+    println("Hola"*string(i))
     for j=1:(size(negative_dataset[i], 1))
         println(negative_dataset[i][j])
         println("on "*(matrix[i][1]))
@@ -176,28 +184,28 @@ end
 # println(matrix_cut)
 
 # Crear el directorio si no existe
-if !isdir("imagenes_positivas")
-    mkdir("imagenes_positivas")
+if !isdir(hit_path)
+    mkdir(hit_path)
 end
 global cont = 1
 for (name2, image) in positive_images
     # Guardar la imagen en el directorio
     name = "recorte"*string(cont)*".png"
     println("saving \""*name*"\" of image named :"*name2)
-    save(joinpath("imagenes_positivas", name), image)
+    save(joinpath(hit_path, name), image)
     global cont = cont+1
 end
 
 # Crear el directorio si no existe
-if !isdir("imagenes_negativas")
-    mkdir("imagenes_negativas")
+if !isdir(miss_path)
+    mkdir(miss_path)
 end
 global cont = 1
 for (name2, image) in negative_images
     # Guardar la imagen en el directorio
     name = "recorte"*string(cont)*".png"
     println("saving \""*name*"\" of image named :"*name2)
-    save(joinpath("imagenes_negativas", name), image)
+    save(joinpath(miss_path, name), image)
     global cont = cont+1
 end
 
