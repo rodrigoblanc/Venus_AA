@@ -6,8 +6,6 @@ using Colors
 using FileIO
 using Images
 using NaturalSort
-
-#David, comentalo sino
 using ImageView
 using Images
 
@@ -28,7 +26,7 @@ for i=1:(size(ARGS,1))
     end
 end 
 # Debe ser común a todos los PC's
-ccd("Venus_AA/venus/GroundTruths")
+ccd("Venus_AA/venus/GroundTruths/dataset_etiquetado")
 
 #Guardamos el directorio actual
 files_and_dirs = readdir()
@@ -97,7 +95,7 @@ println()
 =#
 return
 
-img_path = mycd*"Venus_AA/venus"
+img_path = mycd*"Venus_AA/venus/imagenes"
 hit_path = mycd*"Venus_AA/venus/hit"
 miss_path = mycd*"Venus_AA/venus/miss"
 
@@ -202,4 +200,7 @@ for (name2, image) in negative_images
     save(joinpath("imagenes_negativas", name), image)
     global cont = cont+1
 end
+
+
+#-----------------------------------Extraccion de caracteristicas----------------------------------------------------------
 
