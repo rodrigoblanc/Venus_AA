@@ -1,7 +1,7 @@
 # Import packages
-import Pkg; Pkg.add("JLD2")
-import Pkg; Pkg.add("Images")
-import Pkg; Pkg.add("Plots")
+#import Pkg; Pkg.add("JLD2")
+#import Pkg; Pkg.add("Images")
+#import Pkg; Pkg.add("Plots")
 
 using DelimitedFiles
 using JLD2
@@ -11,7 +11,6 @@ using Colors
 using FileIO
 using Images
 using NaturalSort
-using ImageView
 using Images
 include("funciones.jl")
 
