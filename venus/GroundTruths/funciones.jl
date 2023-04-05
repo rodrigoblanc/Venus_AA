@@ -19,7 +19,7 @@ function recortar(coords, imagen)
     start_y = Int(max(1, coords[2] - rounded_radius))
     end_y = Int(min(coords[2]+rounded_radius, image_size[2]))
     
-    println("recortar-> Recortando:\t"*string(start_x)*","*string(start_y)*")-----"*"("*string(end_x)*","*string(end_y)*")")
+    println("recortar-> Recortando:\t("*string(start_x)*","*string(start_y)*")-----"*"("*string(end_x)*","*string(end_y)*")")
 
     # Las imágenes están traspuestas, habrá que recortar acorde a ello y trasponer
     # el resultado
