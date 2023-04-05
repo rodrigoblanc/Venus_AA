@@ -1,17 +1,30 @@
 # Import packages
-#import Pkg; Pkg.add("JLD2")
-#import Pkg; Pkg.add("Images")
-#import Pkg; Pkg.add("Plots")
+
+import Pkg;
 
 using DelimitedFiles
+
+#Pkg.add("JLD2")
 using JLD2
-using Images
+
+#Pkg.add("Plots")
 using Plots
+
+#Pkg.add("Colors")
 using Colors
+
+#Pkg.add("FileIO")
 using FileIO
+
+#Pkg.add("Images")
 using Images
+
+#Pkg.add("NaturalSort")
 using NaturalSort
-using Images
+
+#Pkg.add("ImageView")
+#using ImageView
+
 include("funciones.jl")
 
 # PATHS
@@ -138,7 +151,7 @@ function loadFolderImages(folderName::String)
         # Check that they are color images
         #@assert(isa(image, Array{RGBA{Normed{UInt8,8}},2}) || isa(image, Array{RGB{Normed{UInt8,8}},2}))
         # Add the image to the vector of images
-        push!(images, (fileName, convert(Array{Float64}, gray.(Gray.(image)))));
+        push!(images, convert(Array{Float64}, gray.(Gray.(image))));
     end;
 
     # Convert the images to arrays by broadcasting the conversion functions, and return the resulting vectors ||Solo nos interesa lo gris(imageToColorArray.(images), 
@@ -148,7 +161,7 @@ end;
 # Tiene todas las imagenes, 1 por fila 
 matrix = loadFolderImages(img_path)
 
-save("gray.png", colorview(Gray,matrix[1][2]))
+save("gray.png", colorview(Gray,matrix[1]))
 
 #display(plot(matrix))
 
@@ -156,12 +169,10 @@ positive_images = []
 negative_images = []
 
 for i=1:size_data
-    println("Hola"*string(i))
     for j=1:(size(negative_dataset[i], 1))
         println(negative_dataset[i][j])
-        println("on "*(matrix[i][1]))
         recorte = negative_dataset[i][j][2:4]
-        push!(negative_images, (matrix[i][1], recortar(recorte, matrix[i][2])))
+        push!(negative_images, recortar(recorte, matrix[i]))
     end
 end
 
@@ -169,7 +180,7 @@ for i=1:size_data
     for j=1:(size(positive_dataset[i], 1))
         println(positive_dataset[i][j])
         recorte = positive_dataset[i][j][2:4]
-        push!(positive_images, (matrix[i][1], recortar(recorte, matrix[i][2])))
+        push!(positive_images, recortar(recorte, matrix[i]))
     end
 end
 
@@ -191,10 +202,10 @@ if !isdir(hit_path)
     mkdir(hit_path)
 end
 global cont = 1
-for (name2, image) in positive_images
+for (image) in positive_images
     # Guardar la imagen en el directorio
     name = "recorte"*string(cont)*".png"
-    println("saving \""*name*"\" of image named :"*name2)
+    println("saving \""*name*"\"")
     save(joinpath(hit_path, name), image)
     global cont = cont+1
 end
@@ -204,10 +215,10 @@ if !isdir(miss_path)
     mkdir(miss_path)
 end
 global cont = 1
-for (name2, image) in negative_images
+for (image) in negative_images
     # Guardar la imagen en el directorio
     name = "recorte"*string(cont)*".png"
-    println("saving \""*name*"\" of image named :"*name2)
+    println("saving \""*name*"\"")
     save(joinpath(miss_path, name), image)
     global cont = cont+1
 end
