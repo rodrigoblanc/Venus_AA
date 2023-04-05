@@ -12,6 +12,7 @@ using FileIO
 using Images
 using NaturalSort
 using Images
+using Statistics
 include("funciones.jl")
 
 # PATHS
