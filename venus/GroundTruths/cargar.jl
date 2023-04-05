@@ -25,6 +25,9 @@ using NaturalSort
 #Pkg.add("ImageView")
 #using ImageView
 
+#Pkg.add("Statistics")
+using Statistics
+
 include("funciones.jl")
 
 # PATHS

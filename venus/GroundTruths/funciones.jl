@@ -1,5 +1,7 @@
 include("personal.jl")
 
+K_MULTIPLIER = 1 #Esto sirve para el radio que se usa para recortar
+
 function ccd(relativeLocation::String)
     cd(mycd*relativeLocation)
 end
@@ -10,7 +12,7 @@ function recortar(coords, imagen)
     
     # El radio se redondea hacia arriba para abarcar más area de la que abarcariamos de poder considerar los flotantes
     image_size = size(imagen)
-    rounded_radius = Int(ceil(coords[3]))
+    rounded_radius = Int(ceil(coords[3])) * K_MULTIPLIER
     
     start_x = Int(max(1, coords[1] - rounded_radius))
     end_x = Int(min(coords[1]+rounded_radius, image_size[1]))
