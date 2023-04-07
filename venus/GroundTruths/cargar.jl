@@ -34,6 +34,10 @@ using ScikitLearn
 #Pkg.add("Flux")
 using Flux
 
+#Pkg.add("Random")
+using Random
+using Random:seed!
+
 include("funciones.jl")
 
 # PATHS

@@ -56,7 +56,7 @@ end
 @sk_import tree: DecisionTreeClassifier
 @sk_import neighbors: KNeighborsClassifier 
 
-function oneHotEncoding(feature::AbstractArray{<:Any,1}, classes::AbstractArray{<:Any,1})
+function oneHotEncoding(feature::Matrix{<:Any,1}, classes::Matrix{<:Any,1})
     unique_classes = unique(classes)
 
     if size(unique_classes, 1) == 2
@@ -550,7 +550,7 @@ function crossvalidation(targets::AbstractArray{<:Any, 1}, k::Int64)
 
 end
 
-function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Float64,2}, targets::Array{Any,2}, k::Int64)
+function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Float64,2}, targets::Array{<:Any,2}, k::Int64)
 
     @assert(size(inputs,1)==length(targets));       # Condición para entradas y salidas deseadas válidas
     @assert((model==:ANN) || (model==:SVM) || (model==:DecisionTree) || (model==:kNN)); # Condición de que debe seguir alguno de los modelos
