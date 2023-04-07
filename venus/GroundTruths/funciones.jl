@@ -56,7 +56,7 @@ end
 @sk_import tree: DecisionTreeClassifier
 @sk_import neighbors: KNeighborsClassifier 
 
-function oneHotEncoding(feature::Matrix{<:Any,1}, classes::Matrix{<:Any,1})
+function oneHotEncoding(feature::AbstractArray{<:Any,1}, classes::AbstractArray{<:Any,1})
     unique_classes = unique(classes)
 
     if size(unique_classes, 1) == 2
