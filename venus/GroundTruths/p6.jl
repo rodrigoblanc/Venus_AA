@@ -1,61 +1,22 @@
-include("personal.jl")
+using DelimitedFiles
+using Statistics
+using Flux
+using Flux.Losses
+using Random
+using Random:seed!
+using Plots
+using ScikitLearn
+using FileIO
 
-K_MULTIPLIER = 1 #Esto sirve para el radio que se usa para recortar
-
-function ccd(relativeLocation::String)
-    cd(mycd*relativeLocation)
-end
-
-function recortar(coords, imagen)
-
-    #imshow(imagen)
-    
-    # El radio se redondea hacia arriba para abarcar más area de la que abarcariamos de poder considerar los flotantes
-    image_size = size(imagen)
-    rounded_radius = Int(ceil(coords[3])) * K_MULTIPLIER
-    
-    start_x = Int(max(1, coords[1] - rounded_radius))
-    end_x = Int(min(coords[1]+rounded_radius, image_size[1]))
-    start_y = Int(max(1, coords[2] - rounded_radius))
-    end_y = Int(min(coords[2]+rounded_radius, image_size[2]))
-    
-    println("recortar-> Recortando:\t("*string(start_x)*","*string(start_y)*")-----"*"("*string(end_x)*","*string(end_y)*")")
-
-    # Las imágenes están traspuestas, habrá que recortar acorde a ello y trasponer
-    # el resultado
-    #= #! transpose warning
-        This operation is intended for linear algebra usage
-        - for general data manipulation see [permutedims](@ref Base.permutedims),
-        which is non-recursive
-    =#
-    imagen2 = imagen[start_y:end_y, start_x:end_x]
-    #imagen2 = transpose(imagen2)
-    return imagen2
-end
-
-
-
-function featureExtraction(image, class::Int64, classes::AbstractArray{<:Any, 1})
-    mean_ = mean(image)
-    std_ = std(image)
-    return [mean_, std_, class]
-end
-
-function saveAsData(fileName::String, data, separator::String = ";")
-    open(fileName, "w") do io
-        writedlm(io, data, separator)
-    end
-end
-
-
-#---------------------------------------- Funciones P6 -----------------------------------------------------
-
-
-# Importamos los modelos que vamos a utilizar
+# Importación de los modelos que vamos a emplear
 @sk_import svm: SVC
 @sk_import tree: DecisionTreeClassifier
-@sk_import neighbors: KNeighborsClassifier 
+@sk_import neighbors: KNeighborsClassifier
 
+"""
+    feature -> conjunto de clases a 'oneHot-Encodear'  
+    classes -> conjunto total de clases
+"""
 function oneHotEncoding(feature::AbstractArray{<:Any,1}, classes::AbstractArray{<:Any,1})
     unique_classes = unique(classes)
 
@@ -73,7 +34,6 @@ function oneHotEncoding(feature::AbstractArray{<:Any,1}, classes::AbstractArray{
 
 end
 
-#DAVID Tenemos que llamar a la funcion de un solo argumento que ya llama a la funcion con dos argumentos
 function oneHotEncoding(feature::AbstractArray{<:Any,1})
     oneHotEncoding(feature, unique(feature))
 end
@@ -97,10 +57,6 @@ function calculateZeroMeanNormalizationParameters(input::AbstractArray{<:Real,2}
     return(media, desv)
 end
 
-"""
-    input -> Array bidimensional a normalizar
-
-"""
 function normalizeMinMax!(input::AbstractArray{<:Real,2}, parameters::NTuple{2, AbstractArray{<:Real,2}})
     
     input .-= parameters[1]
@@ -133,10 +89,10 @@ end
 
 function classifyOutputs(outputs::AbstractArray{<:Real,2}; threshold::Real=0.5)
 
-    if size(outputs,1) == 1 #DAVID Comprobamos si es unidimensional
+    if size(outputs,1) == 1
         
         return outputs .>= threshold
-    else #Podriamos quitar esta rama pq solo tenemos dos clases
+    else
         (_, indicesMaxEachInstance) = findmax(outputs, dims=1)
         outputs = falses(size(outputs))
         outputs[indicesMaxEachInstance] .= true
@@ -167,10 +123,8 @@ function accuracy(targets::AbstractArray{Bool, 2}, outputs::AbstractArray{Bool, 
     end
 end
 
-#DAVID Seria para llamarla si no tenemos las salidas clasificadas
-#DAVID Pero va a dar igual si la llamamos despues pq seria como llamar dos veces a classifyOutputs que no pasaria nada
 function accuracy(targets::AbstractArray{Bool, 1}, outputs::AbstractArray{<:Real,1}, threshold::Real=0.5)
-    outputs = outputs .> threshold 
+    outputs = outputs .> 0.5 
     return accuracy(targets, outputs)
 end
 
@@ -180,22 +134,25 @@ function accuracy(targets::AbstractArray{Bool,2}, outputs::AbstractArray{<:Real,
     return mean(correctClassifications)
 end
 
-#DAVID Creo que vamos cambiar la firma por esta function rna_clasification(topology::AbstractArray{<:Int,1}, targets::AbstractArray{<:Real,2}, outputs::AbstractArray{Bool,2})
-#DAVID Se trabaja con features y outputs transpuestos
-function rna_clasification(topology::AbstractArray{<:Int,1}, features, outputs)
+#function rna_clasification(topology::AbstractArray{<:Int,1}, targets, outputs)
+function rna_clasification(topology::AbstractArray{<:Int,1}, features::AbstractArray{<:Real,2}, outputs::AbstractArray{Bool,2})
 
     ann = Flux.Chain()
     numInputsLayer = size(features, 1)
     
-    #DAVID El operador '...' sirve para concatenar mas capas a ann
+    # RNA construyendo desde las capas 1 hasta la N-1
+    # numNeuronas capa 1 = numFeatures
+    # numNeuronas capa i = topology[i]
     for numOutputsLayer = topology
         ann = Chain(ann..., Dense(numInputsLayer, numOutputsLayer, σ))
         numInputsLayer = numOutputsLayer
     end
 
     if size(outputs, 1) == 1
-        ann = Flux.Chain(ann..., Dense(numInputsLayer, size(outputs,1), σ))
+        # numClases == 1 -> Se aplica a la salida una función sigmoidal
+        ann = Flux.Chain(ann..., Dense(numInputsLayer, 1, σ))
     else 
+        # numClases > 1 -> Se aplica una función de transferencia "softmax"
         ann = Chain(ann..., Dense(numInputsLayer, size(outputs,1)))
         ann = Flux.Chain(ann..., softmax)
     end
@@ -205,8 +162,8 @@ end
 
 function train(topology::AbstractArray{<:Int,1}, dataset::Tuple{AbstractArray{<:Real,2},AbstractArray{Bool,2}}, testSet::Tuple{AbstractArray{<:Real,2},AbstractArray{Bool,2}}, validationSet::Tuple{AbstractArray{<:Real,2},AbstractArray{Bool,2}};
     maxEpochs::Int=1000, minLoss::Real=0, learningRate::Real=0.01, maxEpochsVal::Int=20)
-    trainingInputs = transpose(dataset[1]) # Matriz transpuesta de 4 filas y 150 columnas
-    trainingTargets = transpose(dataset[2]) 
+    trainingInputs = transpose(dataset[1]) # Matriz transpuesta de 4 filas y 150 columnas del trainingSet
+    trainingTargets = transpose(dataset[2]) # Matriz transpuesta de 3 filas y 150 columnas del trainingSet
 
     testInputs = transpose(testSet[1])
     testTargets = transpose(testSet[2])
@@ -654,3 +611,73 @@ function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Flo
 
     #return (mean(testAccuracies),std(testAccuracies),mean(testError_rate),std(testError_rate),mean(testRecall),std(testRecall),mean(testSpeciticity),std(testSpeciticity),mean(testPrecision),std(testPrecision),mean(testNegative_predictive_value),std(testNegative_predictive_value),mean(testF1),std(testF1));
 end;
+
+salida = open("resultadosAprox4.txt", "w")
+
+numFolds = 10
+
+topology=[3,4]
+learningRate = 0.01
+maxEpochs = 1000
+validationRatio = 0.2
+maxEpochsVal = 6
+numRepetitions = 50
+
+kernel = "rbf"
+kernelDegree = 3
+kernelGamma = 2
+C=1
+
+maxDepth = 4
+
+numNeighbors = 8
+
+# dataset = readdlm("patrones_negativos.data", ',')
+# inputs = convert(Array{Float64, 2}, dataset[:, 1:6])
+# targets = convert(Array{Any,1}, dataset[:, 7])
+
+dataset = readdlm("aprox4.data", ',')
+inputs = convert(Array{Float64, 2}, dataset[:, 1:9])
+targets = (dataset[:, 10])
+
+normalizeMinMax!(inputs); 
+
+modelHyperparameters = Dict();
+modelHyperparameters["learningRate"] = learningRate;
+modelHyperparameters["validationRatio"] = validationRatio;
+modelHyperparameters["numExecutions"] = numRepetitions;
+modelHyperparameters["maxEpochs"] = maxEpochs;
+modelHyperparameters["maxEpochsVal"] = maxEpochsVal;
+
+topologies = [[3], [1], [2], [1,1], [1,2], [3,4], [2,3], [5,5]]
+for i in topologies
+    modelHyperparameters["topology"] = i
+    macc, sacc, mf1, sf1 = modelCrossValidation(:ANN, modelHyperparameters, inputs, targets, numFolds);
+    write(salida, string("\nRNA: ", string(i), "\nMedia de precision del test en 10-fold: ", round(macc*100, digits=2)," \nDesviacion tipica del test: ", round(sacc*100, digits=2), "\nMedia de Especificidad de test ", round(mf1*100, digits=2), "\nDesviacion tipica de Especificidad de test ", round(sf1*100, digits=2)))
+end 
+
+    modelHyperparameters = Dict();
+    modelHyperparameters["kernelDegree"] = kernelDegree;
+    modelHyperparameters["kernelGamma"] = kernelGamma;
+
+topologies = [("rbf", 0.1), ("rbf", 0.6), ("rbf", 1), ("poly", 0.1), ("poly", 0.6), ("poly", 1), ("sigmoid", 0.1), ("sigmoid", 0.6), ("sigmoid", 1)]
+
+for topology in topologies
+    modelHyperparameters["kernel"] = topology[1];
+    modelHyperparameters["C"] = topology[2];
+    macc, sacc, mf1, sf1 = modelCrossValidation(:SVM, modelHyperparameters, inputs, targets, numFolds);
+    write(salida, string("\nSVM: con kernel \"", string(topology[1]), "\" y C:", string(topology[2]), "\nMedia de precision del test en 10-fold: ", round(macc*100, digits=2)," \nDesviacion tipica del test: ", round(sacc*100, digits=2), "\nMedia de Especificidad de test ", round(mf1*100, digits=2), "\nDesviacion tipica de Especificidad de test ", round(sf1*100, digits=2)))
+end
+depths = [1, 3, 4, 5, 6, 7, 10]
+
+for depth in depths
+    macc, sacc, mf1, sf1 = modelCrossValidation(:DecisionTree, Dict("maxDepth" => depth), inputs, targets, numFolds);
+    write(salida, string("\nDECISION TREE: ", string(depth), "\nMedia de precision del test en 10-fold: ", round(macc*100, digits=2)," \nDesviacion tipica del test: ", round(sacc*100, digits=2), "\nMedia de Especificidad de test ", round(mf1*100, digits=2), "\nDesviacion tipica de Especificidad de test ", round(sf1*100, digits=2)))
+end
+
+neighboors = [2,5, 8, 11, 14, 17]
+for i in neighboors
+    macc, sacc, mf1, sf1= modelCrossValidation(:kNN, Dict("numNeighbors" => i), inputs, targets, numFolds);
+     write(salida, string("\nKNN: ", string(i), "\nMedia de precision del test en 10-fold: ",macc," \nDesviacion tipica del test: ", sacc, "\nMedia de Especificidad de test ", mf1, "\nDesviacion tipica de Especificidad de test ", sf1))
+end
+close(salida)

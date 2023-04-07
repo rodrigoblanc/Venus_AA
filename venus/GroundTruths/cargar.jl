@@ -233,8 +233,42 @@ for (image) in negative_images
 end
 
 
+#---------------------------------------- Carga de recortes -----------------------------------------------------------
+
+# Carga de Hit 'n Miss
+
+#hit = loadFolderImages(hit_path)
+hit = positive_images
+
+#miss = loadFolderImages(miss_path)
+miss = negative_images
+
 #---------------------------------- Extraccion de caracteristicas -----------------------------------------------------
 
+first_part = []
+
+for image in hit
+    push!(first_part, featureExtraction(image, 0, [0, 1]))
+end
+
+second_part = []
+for image in miss
+    push!(second_part, featureExtraction(image, 1, [0, 1]))
+end
+
+dataSet = vcat(first_part, second_part)
+
+#normalizeMinMax!(dataSet[1])
+
+# Guardamos el dataSet en "aprox1.data"
+
+saveAsData(pattern_path*"aprox1.data", dataSet, ",")
+
+
+#------------------------------------- Carga del ".data" --------------------------------------------------------------
+
+
+dataSetImportado = readdlm(pattern_path*"aprox1.data", ',')
 
 
 
@@ -242,11 +276,11 @@ end
 
 # Importación de los modelos que vamos a emplear
 
-#TODO Hay que mirar si realmente habria que importarlo aqui o no
+# Se hace en "funciones.jl"
 
-@sk_import svm: SVC
-@sk_import tree: DecisionTreeClassifier
-@sk_import neighbors: KNeighborsClassifier 
+# @sk_import svm: SVC
+# @sk_import tree: DecisionTreeClassifier
+# @sk_import neighbors: KNeighborsClassifier 
 
 
 
@@ -273,10 +307,9 @@ maxDepth = 4
 
 numNeighbors = 8
 
-dataset = readdlm("aprox1.data", ',') #TODO Aqui deberiamos meter el dataset que es nuestra matriz
 #Dividimos el dataset en dos (features y targets)
-inputs = convert(Array{Float64, 2}, dataset[:, 1:2]) 
-targets = (dataset[:, 3])
+inputs = convert(Array{Float64, 2}, dataSetImportado[:, 1:2]) 
+targets = reshape((dataSetImportado[:, 3]), :, 1)
 
 normalizeMinMax!(inputs);
 
