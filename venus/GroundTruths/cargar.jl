@@ -33,6 +33,7 @@ using ScikitLearn
 
 #Pkg.add("Flux")
 using Flux
+using Flux.Losses
 
 #Pkg.add("Random")
 using Random
@@ -46,6 +47,7 @@ pattern_path = mycd*"Venus_AA/venus/GroundTruths/Patrones"
 img_path = mycd*"Venus_AA/venus/imagenes"
 hit_path = mycd*"Venus_AA/venus/hit"
 miss_path = mycd*"Venus_AA/venus/miss"
+path = mycd*"Venus_AA/venus"
 
 
 # Args
@@ -266,13 +268,15 @@ dataSet = vcat(first_part, second_part)
 
 # Guardamos el dataSet en "aprox1.data"
 
-saveAsData(pattern_path*"aprox1.data", dataSet, ",")
+saveAsData(path*"/"*"aprox1.data", dataSet, '\t')
 
+# TODO Mirar una alternativa a los circulos azules para los plots de latex,
+# TODO algo como +
 
 #------------------------------------- Carga del ".data" --------------------------------------------------------------
 
 
-dataSetImportado = readdlm(pattern_path*"aprox1.data", ',')
+dataSetImportado = readdlm(path*"/"*"aprox1.data", '\t')
 
 
 
@@ -297,10 +301,10 @@ numFolds = 10
 
 topology=[3,4]
 learningRate = 0.01
-maxEpochs = 1000
-validationRatio = 0.2
+maxEpochs = 100 #1000
+validationRatio = 0.2   # Si queremos que el modelo no se entrene usando un conjunto de validación, este valor debe ser 0
 maxEpochsVal = 6
-numRepetitions = 50
+numRepetitions = 5 #50
 
 kernel = "rbf"
 kernelDegree = 3

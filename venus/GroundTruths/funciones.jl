@@ -41,7 +41,7 @@ function featureExtraction(image, class::Int64, classes::AbstractArray{<:Any, 1}
     return [mean_, std_, class]
 end
 
-function saveAsData(fileName::String, data, separator::String = ";")
+function saveAsData(fileName::String, data, separator::Char = ';')
     open(fileName, "w") do io
         writedlm(io, data, separator)
     end
@@ -55,6 +55,22 @@ end
 @sk_import svm: SVC
 @sk_import tree: DecisionTreeClassifier
 @sk_import neighbors: KNeighborsClassifier 
+
+function oneHotEncoding(feature::Matrix{<:Any}, classes::AbstractArray{<:Any, 1})
+    unique_classes = unique(classes)
+
+    if size(unique_classes, 1) == 2
+        bool_array = Array{Bool, 2}(undef, size(feature, 1), 1)
+        bool_array[:, 1] .= (feature.==classes[2])
+        return bool_array
+    else
+        bool_array = falses(size(feature,1), size(unique_classes, 1))
+        for i in 1:(size(unique_classes,1 ))
+            bool_array[:,i] = convert(Array{Bool,1}, feature.== unique_classes[i])
+        end
+        return bool_array
+    end
+end
 
 function oneHotEncoding(feature::AbstractArray{<:Any,1}, classes::AbstractArray{<:Any,1})
     unique_classes = unique(classes)
@@ -149,7 +165,7 @@ end
 function accuracy(targets::AbstractArray{Bool, 1}, outputs::AbstractArray{Bool, 1})
     @assert (size(targets,1)==size(outputs,1)) "Las matrices de entradas y salidas deseadas no tienen el mismo número de filas"
     
-    return count(targets .== outputs)/size(outputs, 1)
+    return Base.count(targets .== outputs)/size(outputs, 1)
 end
 
 function accuracy(targets::AbstractArray{Bool, 2}, outputs::AbstractArray{Bool, 2})
@@ -236,7 +252,7 @@ function train(topology::AbstractArray{<:Int,1}, dataset::Tuple{AbstractArray{<:
 
     ann = rna_clasification(topology, trainingInputs, trainingTargets)
 
-    loss(x, y) = (size(y,1) == 1) ? Losses.binarycrossentropy(ann(x), y) : Losses.crossentropy(ann(x), y); 
+    loss(x, y) = (size(y,1) == 1) ? Flux.Losses.binarycrossentropy(ann(x), y) : Flux.Losses.crossentropy(ann(x), y); 
 
     
     trainingLosses = Float32[]
@@ -295,7 +311,7 @@ function train(topology::AbstractArray{<:Int,1}, dataset::Tuple{AbstractArray{<:
     bestAnn = deepcopy(ann)
 
     while (numEpochs < maxEpochs) && (trainingLoss > minLoss) && (numEpochsVal < maxEpochsVal)
-        Flux.train!(loss, params(ann), [(trainingInputs, trainingTargets)], ADAM(learningRate))
+        Flux.train!(loss, Flux.params(ann), [(trainingInputs, trainingTargets)], ADAM(learningRate))
         
         numEpochs +=1
 
@@ -366,44 +382,7 @@ function holdOut(N::Int64, Pval::Float64, Ptest::Float64)
     return (trainValidationIndex[trainingIndex], trainValidationIndex[validationIndex], testIndex)
 end
 
-
-function confusionMatrix(outputs::AbstractArray{Bool,1}, targets::AbstractArray{Bool,1})
-    @assert(length(outputs) == length(targets))
-
-    acc = accuracy(outputs, targets) 
-    errorRate = 1. - acc
-
-    recall = mean(outputs[targets]) # Sensibilidad
-    specificity = mean(.!outputs[.!targets]) # Especificidad
-    precision = mean(targets[outputs]) 
-    NPV = mean(.!targets[.!outputs])
-
-    if isnan(recall) && isnan(precision)
-        recall = 1.
-        precision = 1.
-    elseif isnan(specificity) && isnan(NPV)
-        specificity = 1.
-        NPV = 1.
-    end
-
-    recall = isnan(recall) ? 0. : recall
-    precision = isnan(precision) ? 0. : precision
-    specificity = isnan(specificity) ? 0. : specificity
-    NPV = isnan(NPV) ? 0. : NPV
-
-    F1 = (recall==precision==0.) ? 0. : 2*(recall * precision)/(recall+precision)
-
-    confMatrix = Array{Int64,2}(undef, 2, 2)
-
-    confMatrix[1,1] = sum(.!targets .& .!outputs) # Verdaderos negativos
-    confMatrix[1,2] = sum(.!targets .& outputs) # Falsos negativos
-    confMatrix[2,1] = sum(targets .& .!outputs) # Falsos positivos
-    confMatrix[2,2] = sum(targets .& outputs) # Verdaderos positivos
-
-    return (acc, errorRate, recall, specificity, precision, NPV,F1, confMatrix)
-end
-
-confusionMatrix(outputs:: AbstractArray{<:Real}, targets:: AbstractArray{<:Real}, umbral::AbstractArray{<:Real}=0.5) = confusionMatrix(Array{Bool,1}(outputs.>=umbral), targets)
+# PRACTICA 4
 
 function unocontratodos(inputs::AbstractArray{Float64, 2}, targets::AbstractArray{Bool,2})
     numClasses = size(targets,2);
@@ -422,94 +401,160 @@ function unocontratodos(inputs::AbstractArray{Float64, 2}, targets::AbstractArra
     return outputs
 end
 
+function confusionMatrix(outputs::Array{Bool,1}, targets::Array{Bool,1})
+    @assert(length(outputs)==length(targets));
+    # Para calcular la precision y la tasa de error, se puede llamar a las funciones definidas en la practica 2
+    acc         = accuracy(outputs, targets); # Precision, definida previamente en una practica anterior
+    errorRate   = 1. - acc;
+    recall      = mean(  outputs[  targets]); # Sensibilidad
+    specificity = mean(.!outputs[.!targets]); # Especificidad
+    precision   = mean(  targets[  outputs]); # Valor predictivo positivo
+    NPV         = mean(.!targets[.!outputs]); # Valor predictivo negativo
+    # Controlamos que algunos casos pueden ser NaN
+    #  Para el caso de sensibilidad y especificidad, en un conjunto de entrenamiento estos no pueden ser NaN, porque esto indicaria que se ha intentado entrenar con una unica clase
+    #   Sin embargo, sí pueden ser NaN en el caso de aplicar un modelo en un conjunto de test, si este sólo tiene patrones de una clase
+    #  Para VPP y VPN, sí pueden ser NaN en caso de que el clasificador lo haya clasificado todo como negativo o positivo respectivamente
+    # En estos casos, estas metricas habria que dejarlas a NaN para indicar que no se han podido evaluar
+    #  Sin embargo, como es posible que se quiera combinar estos valores al evaluar una clasificacion multiclase, es necesario asignarles un valor. El criterio que se usa aqui es que estos valores seran igual a 0
+    # Ademas, hay un caso especial: cuando los VP son el 100% de los patrones, o los VN son el 100% de los patrones
+    #  En este caso, el sistema ha actuado correctamente, así que controlamos primero este caso
+    if isnan(recall) && isnan(precision) # Los VN son el 100% de los patrones
+        recall = 1.;
+        precision = 1.;
+    elseif isnan(specificity) && isnan(NPV) # Los VP son el 100% de los patrones
+        specificity = 1.;
+        NPV = 1.;
+    end;
+    # Ahora controlamos los casos en los que no se han podido evaluar las metricas excluyendo los casos anteriores
+    recall      = isnan(recall)      ? 0. : recall;
+    specificity = isnan(specificity) ? 0. : specificity;
+    precision   = isnan(precision)   ? 0. : precision;
+    NPV         = isnan(NPV)         ? 0. : NPV;
+    # Calculamos F1, teniendo en cuenta que si sensibilidad o VPP es NaN (pero no ambos), el resultado tiene que ser 0 porque si sensibilidad=NaN entonces VPP=0 y viceversa
+    F1          = (recall==precision==0.) ? 0. : 2*(recall*precision)/(recall+precision);
+    # Reservamos memoria para la matriz de confusion
+    confMatrix = Array{Int64,2}(undef, 2, 2);
+    # Ponemos en las filas los que pertenecen a cada clase (targets) y en las columnas los clasificados (outputs)
+    #  Primera fila/columna: negativos
+    #  Segunda fila/columna: positivos
+    # Primera fila: patrones de clase negativo, clasificados como negativos o positivos
+    confMatrix[1,1] = sum(.!targets .& .!outputs); # VN
+    confMatrix[1,2] = sum(.!targets .&   outputs); # FP
+    # Segunda fila: patrones de clase positiva, clasificados como negativos o positivos
+    confMatrix[2,1] = sum(  targets .& .!outputs); # FN
+    confMatrix[2,2] = sum(  targets .&   outputs); # VP
+    return (acc, errorRate, recall, specificity, precision, NPV, F1, confMatrix)
+end;
 
-function confusionMatrix(outputs::AbstractArray{Bool,2}, targets::AbstractArray{Bool,2}, weighted::Bool)
-    @assert (size(outputs) == size(targets))
-    numClasses=size(targets, 2)
-    @assert (numClasses !=2)
+confusionMatrix(outputs::Array{Float64,1}, targets::Array{Bool,1}; threshold::Float64=0.5) = confusionMatrix(Array{Bool,1}(outputs.>=threshold), targets);
+
+
+function confusionMatrix(outputs::Array{Bool,2}, targets::Array{Bool,2}; weighted::Bool=true)
+    @assert(size(outputs)==size(targets));
+    numClasses = size(targets,2);
+    # Nos aseguramos de que no hay dos columnas
+    @assert(numClasses!=2);
     if (numClasses==1)
-        return confusionMatrix(outputs[:,1],targets[:,1])
+        return confusionMatrix(outputs[:,1], targets[:,1]);
     else
-        @assert (all(sum(outputs, dims=2).==1))
-
-        recall = zeros(numClasses);
+        # Nos aseguramos de que en cada fila haya uno y sólo un valor a true
+        @assert(all(sum(outputs, dims=2).==1));
+        # Reservamos memoria para las metricas de cada clase, inicializandolas a 0 porque algunas posiblemente no se calculen
+        recall      = zeros(numClasses);
         specificity = zeros(numClasses);
-        precision = zeros(numClasses);
-        NPV = zeros(numClasses);
-        F1 = zeros(numClasses);
-        confMatrix = Array{Int64,2}(undef, numClasses, numClasses)
-
-        numInstancesFromEachClass = vec(sum(targets, dims=1))
-        
+        precision   = zeros(numClasses);
+        NPV         = zeros(numClasses);
+        F1          = zeros(numClasses);
+        # Reservamos memoria para la matriz de confusion
+        confMatrix  = Array{Int64,2}(undef, numClasses, numClasses);
+        # Calculamos el numero de patrones de cada clase
+        numInstancesFromEachClass = vec(sum(targets, dims=1));
+        # Calculamos las metricas para cada clase, esto se haria con un bucle similar a "for numClass in 1:numClasses" que itere por todas las clases
+        #  Sin embargo, solo hacemos este calculo para las clases que tengan algun patron
+        #  Puede ocurrir que alguna clase no tenga patrones como consecuencia de haber dividido de forma aleatoria el conjunto de patrones entrenamiento/test
+        #  En aquellas clases en las que no haya patrones, los valores de las metricas seran 0 (los vectores ya estan asignados), y no se tendran en cuenta a la hora de unir estas metricas
         for numClass in findall(numInstancesFromEachClass.>0)
-            #COMPROBAR EL ORDEN(accuracy, error_rate, recall, speciticity, precision, negative_predictive_value,F1_score, matriz_confusion)
+            # Calculamos las metricas de cada problema binario correspondiente a cada clase y las almacenamos en los vectores correspondientes
             (_, _, recall[numClass], specificity[numClass], precision[numClass], NPV[numClass], F1[numClass], _) = confusionMatrix(outputs[:,numClass], targets[:,numClass]);
-        end
+        end;
 
-        for numClassTarget in 1:numClasses
-            for numClassOutput in 1:numClasses
-                confMatrix[numClassTarget, numClassOutput] = sum(targets[:,numClassTarget] .& outputs[:,numClassOutput])
-            end
-        end
+        # Reservamos memoria para la matriz de confusion
+        confMatrix = Array{Int64,2}(undef, numClasses, numClasses);
+        # Calculamos la matriz de confusión haciendo un bucle doble que itere sobre las clases
+        for numClassTarget in 1:numClasses, numClassOutput in 1:numClasses
+            # Igual que antes, ponemos en las filas los que pertenecen a cada clase (targets) y en las columnas los clasificados (outputs)
+            confMatrix[numClassTarget, numClassOutput] = sum(targets[:,numClassTarget] .& outputs[:,numClassOutput]);
+        end;
 
-        if !weighted
-            numClassesWithInstances = sum(numInstancesFromEachClass.>0)
-            recall = sum(recall)/numClassesWithInstances
-            specificity = sum(specificity)/numClassesWithInstances
-            precision = sum(precision)/numClassesWithInstances
-            NPV = sum(NPV)/numClassesWithInstances
-            F1 = sum(F1)/numClassesWithInstances
+        # Aplicamos las forma de combinar las metricas macro o weighted
+        if weighted
+            # Calculamos los valores de ponderacion para hacer el promedio
+            weights = numInstancesFromEachClass./sum(numInstancesFromEachClass);
+            recall      = sum(weights.*recall);
+            specificity = sum(weights.*specificity);
+            precision   = sum(weights.*precision);
+            NPV         = sum(weights.*NPV);
+            F1          = sum(weights.*F1);
         else
-            weights = numInstancesFromEachClass./sum(numInstancesFromEachClass)
-            recall = sum(weights.*recall)
-            specificity = sum(weights.*specificity)
-            precision = sum(weights.*precision)
-            NPV = sum(weights.*NPV)
-            F1 = sum(weights.*F1)
-        end
-
-        acc = accuracy(outputs, targets)
+            # No realizo la media tal cual con la funcion mean, porque puede haber clases sin instancias
+            #  En su lugar, realizo la media solamente de las clases que tengan instancias
+            numClassesWithInstances = sum(numInstancesFromEachClass.>0);
+            recall      = sum(recall)/numClassesWithInstances;
+            specificity = sum(specificity)/numClassesWithInstances;
+            precision   = sum(precision)/numClassesWithInstances;
+            NPV         = sum(NPV)/numClassesWithInstances;
+            F1          = sum(F1)/numClassesWithInstances;
+        end;
+        # Precision y tasa de error las calculamos con las funciones definidas previamente
+        acc = accuracy(outputs, targets; dataInRows=true);
         errorRate = 1 - acc;
+
         return (acc, errorRate, recall, specificity, precision, NPV, F1, confMatrix);
-    end
-end
+    end;
+end;
 
-confusionMatrix(outputs::AbstractArray{<:Real,2}, targets::AbstractArray{Bool,2}, weighted::Bool) = confusionMatrix(classifyOutputs(outputs')', targets, weighted)
+confusionMatrix(outputs::Array{Float64, 1}, targets::Array{Float64, 1}; weighted::Bool=true) = confusionMatrix(outputs, targets.>=0.5)
 
-function confusionMatrix(outputs::AbstractArray{Any}, targets::AbstractArray{Any}, weighted::Bool)
-    @assert(all([in(output, unique(targets)) for output in outputs]))
-    classes = unique(targets)
-    return confusionMatrix(oneHotEncoding(outputs,classes) ,oneHotEncoding(targets,classes));
-end
+function confusionMatrix(outputs::Array{Any,1}, targets::Array{Any,1}; weighted::Bool=true)
+    # Comprobamos que todas las clases de salida esten dentro de las clases de las salidas deseadas
+    @assert(all([in(output, unique(targets)) for output in outputs]));
+    classes = unique(targets);
+    # Es importante calcular el vector de clases primero y pasarlo como argumento a las 2 llamadas a oneHotEncoding para que el orden de las clases sea el mismo en ambas matrices
+    return confusionMatrix(oneHotEncoding(outputs, classes), oneHotEncoding(targets, classes); weighted=weighted);
+end;
 
-printConfusionMatrix(outputs::AbstractArray{Float32,2}, targets::AbstractArray{Bool,2}, weighted::Bool) = printConfusionMatrix(convert(Array{Float64,2}, outputs),targets,weighted);
+confusionMatrix(outputs::Array{Float64,2}, targets::Array{Bool,2}; weighted::Bool=true) = confusionMatrix(classifyOutputs(outputs), targets; weighted=weighted);
 
-function printConfusionMatrix(outputs::AbstractArray{Bool,2}, targets::AbstractArray{Bool,2}, weighted::Bool)
-    (acc, errorRate, recall, specificity, precision, NPV, F1, confMatrix) = 
-confusionMatrix(outputs, targets, weighted);
+# De forma similar a la anterior, añado estas funcion porque las RR.NN.AA. dan la salida como matrices de valores Float32 en lugar de Float64
+# Con estas funcion se pueden usar indistintamente matrices de Float32 o Float64
+confusionMatrix(outputs::Array{Float32,2}, targets::Array{Bool,2}; weighted::Bool=true) = confusionMatrix(convert(Array{Float64,2}, outputs), targets; weighted=weighted);
+
+printConfusionMatrix(outputs::Array{Float32,2}, targets::Array{Bool,2}; weighted::Bool=true) = printConfusionMatrix(convert(Array{Float64,2}, outputs), targets; weighted=weighted);
+
+# Funciones auxiliares para visualizar por pantalla la matriz de confusion y las metricas que se derivan de ella
+function printConfusionMatrix(outputs::Array{Bool,2}, targets::Array{Bool,2}; weighted::Bool=true)
+    (acc, errorRate, recall, specificity, precision, NPV, F1, confMatrix) = confusionMatrix(outputs, targets; weighted=weighted);
     numClasses = size(confMatrix,1);
-    writeHorizontalLine() = (for i in 1:numClasses+1 print("--------") end; 
-println(""); );
-    writeHorizontalLine(); 
+    writeHorizontalLine() = (for i in 1:numClasses+1 print("--------") end; println(""); );
+    writeHorizontalLine();
     print("\t| ");
-
-    if (numClasses==2) 
-        println(" - \t + \t|"); 
+    if (numClasses==2)
+        println(" - \t + \t|");
     else
-        print.("Cl. ", 1:numClasses, "\t| "); 
+        print.("Cl. ", 1:numClasses, "\t| ");
     end;
     println("");
     writeHorizontalLine();
     for numClassTarget in 1:numClasses
-        # print.(confMatrix[numClassTarget,:], "\t"); 
+        # print.(confMatrix[numClassTarget,:], "\t");
         if (numClasses==2)
-            print(numClassTarget == 1 ? " - \t| " : " + \t| "); 
+            print(numClassTarget == 1 ? " - \t| " : " + \t| ");
         else
-            print("Cl. ", numClassTarget, "\t| "); 
+            print("Cl. ", numClassTarget, "\t| ");
         end;
-        print.(confMatrix[numClassTarget,:], "\t| "); 
+        print.(confMatrix[numClassTarget,:], "\t| ");
         println("");
-        writeHorizontalLine(); 
+        writeHorizontalLine();
     end;
     println("Accuracy: ", acc);
     println("Error rate: ", errorRate);
@@ -518,9 +563,12 @@ println(""); );
     println("Precision: ", precision);
     println("Negative predictive value: ", NPV);
     println("F1-score: ", F1);
-    return (acc, errorRate, recall, specificity, precision, NPV, F1, 
-confMatrix);
+    return (acc, errorRate, recall, specificity, precision, NPV, F1, confMatrix);
 end;
+printConfusionMatrix(outputs::Array{Float64,2}, targets::Array{Bool,2}; weighted::Bool=true) =  printConfusionMatrix(classifyOutputs(outputs), targets; weighted=weighted)
+
+
+#############################################################################
 
 function crossvalidation(N::Int64, k::Int64)
 
@@ -606,7 +654,11 @@ function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Flo
 
             testOutputs = predict(model, testInputs)
 
-            acc, _, _, spec, _, _, _, _ = confusionMatrix(convert(AbstractArray{Any, 1}, testOutputs), testTargets, true)
+            global aux = testOutputs
+            println(typeof(testOutputs))
+            println(testOutputs)
+
+            acc, _, _, spec, _, _, _, _ = confusionMatrix(testOutputs, testTargets, weighted=true)
         
         else
 
@@ -630,7 +682,7 @@ function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Flo
                     maxEpochs=parameters["maxEpochs"], learningRate=parameters["learningRate"])
                 end
 
-                testAccuraciesPerRepetition[numTraining], _, _, testSpectPerRepetition[numTraining], _, _, _, _ = confusionMatrix(ann(testInputs')', testTargets, true)
+                testAccuraciesPerRepetition[numTraining], _, _, testSpectPerRepetition[numTraining], _, _, _, _ = confusionMatrix(collect(ann(testInputs')'), testTargets, true)
             end
 
             acc = mean(testAccuraciesPerRepetition)
