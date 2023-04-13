@@ -1,6 +1,16 @@
 include("personal.jl")
 include("Practica4.jl")
 
+
+# PATHS
+
+pattern_path = mycd*"Venus_AA/venus/GroundTruths/Patrones"
+img_path = mycd*"Venus_AA/venus/imagenes"
+hit_path = mycd*"Venus_AA/venus/hit"
+miss_path = mycd*"Venus_AA/venus/miss"
+path = mycd*"Venus_AA/venus"
+
+
 K_MULTIPLIER = 1 #Esto sirve para el radio que se usa para recortar
 
 function ccd(relativeLocation::String)
@@ -45,6 +55,49 @@ function saveAsData(fileName::String, data, separator::Char = ';')
         writedlm(io, data, separator)
     end
 end
+
+
+function count(dir::String)
+    content = readdir(dir)
+    filter!(endswith(".png"), content)
+    global num =0
+    for i in content
+            num +=1
+    end
+end
+
+
+#count(img_path)
+#println(num)
+
+
+function count(arr::Vector{Any})
+    global num =0
+    for i in arr
+            num +=1
+    end
+end
+
+
+function loadFolderImages(folderName::String)
+    images = [];
+    files = sort(readdir(folderName), lt=natural)
+    filter!(endswith(".png"), files)
+    println(files)
+    for fileName in files
+        println("Loading filename: "*fileName)
+        image = load(folderName*"/"*fileName);
+            
+        # Check that they are color images
+        #@assert(isa(image, Array{RGBA{Normed{UInt8,8}},2}) || isa(image, Array{RGB{Normed{UInt8,8}},2}))
+        # Add the image to the vector of images
+        push!(images, convert(Array{Float64}, gray.(Gray.(image))));
+    end;
+
+    # Convert the images to arrays by broadcasting the conversion functions, and return the resulting vectors ||Solo nos interesa lo gris(imageToColorArray.(images), 
+    return images;
+end;
+
 
 
 #---------------------------------------- Funciones P6 -----------------------------------------------------
