@@ -472,7 +472,7 @@ function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Flo
 
             testOutputs = predict(model, testInputs)
 
-            acc, _, _, spec, _, _, _, _ = confusionMatrix(testOutputs, testTargets, weighted=true)
+            acc, _, sens, spec, _, _, _, _ = confusionMatrix(testOutputs, testTargets, weighted=true)
         
         else
 
@@ -483,6 +483,7 @@ function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Flo
             testTargets = targets[crossValidationIndex.==numFold, :];
 
             testAccuraciesPerRepetition = Array{Float64, 1}(undef, parameters["numExecutions"])
+            testSensPerRepetition = Array{Float64, 1}(undef, parameters["numExecutions"])
             testSpectPerRepetition = Array{Float64, 1}(undef, parameters["numExecutions"])
 
             for numTraining in 1:parameters["numExecutions"]
@@ -496,15 +497,17 @@ function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Flo
                     maxEpochs=parameters["maxEpochs"], learningRate=parameters["learningRate"])
                 end
 
-                testAccuraciesPerRepetition[numTraining], _, _, testSpectPerRepetition[numTraining], _, _, _, _ = confusionMatrix(collect(ann(testInputs')'), testTargets, true)
+                testAccuraciesPerRepetition[numTraining], _, testSensPerRepetition[numTraining], testSpectPerRepetition[numTraining], _, _, _, _ = confusionMatrix(collect(ann(testInputs')'), testTargets, true)
             end
 
             acc = mean(testAccuraciesPerRepetition)
+            sens = mean(testSensPerRepetition)
             spec = mean(testSpectPerRepetition)
 
         end
 
         testAccuracies[numFold] = acc
+        testRecall[numFold] = sens
         testSpeciticity[numFold] = spec
 
         
@@ -514,9 +517,10 @@ function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Flo
 
 
     println(model, ": Average test accuracy on ", numFolds, "-fold crossvalidation: ", 100*mean(testAccuracies), ", with a standard desviation of ", 100*std(testAccuracies))
+    println(model, ": Average test recall on ", numFolds, "-fold crossvalidation: ", 100*mean(testRecall), ", with a standard desviation of ", 100*std(testRecall))
     println(model, ": Average test specificity on ", numFolds, "-fold crossvalidation: ", 100*mean(testSpeciticity), ", with a standard desviation of ", 100*std(testSpeciticity))
 
-    return (mean(testAccuracies), std(testAccuracies), mean(testSpeciticity), std(testSpeciticity))
+    return (mean(testAccuracies), std(testAccuracies), mean(testRecall), std(testRecall),mean(testSpeciticity), std(testSpeciticity))
 
     #return (mean(testAccuracies),std(testAccuracies),mean(testError_rate),std(testError_rate),mean(testRecall),std(testRecall),mean(testSpeciticity),std(testSpeciticity),mean(testPrecision),std(testPrecision),mean(testNegative_predictive_value),std(testNegative_predictive_value),mean(testF1),std(testF1));
 end;
