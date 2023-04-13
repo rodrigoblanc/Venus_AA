@@ -53,7 +53,7 @@ include("Aprox"*nAprox*".jl")
 #------------------------------------- Carga del ".data" --------------------------------------------------------------
 
 
-dataSetImportado = readdlm(path*"/"*"aprox1.data", '\t')
+dataSetImportado = readdlm(path*"/"*"aprox"*nAprox*".data", '\t')
 
 
 
