@@ -360,7 +360,7 @@ function confusionMatrix(outputs::AbstractArray{Bool,1}, targets::AbstractArray{
     return (acc, errorRate, recall, specificity, precision, NPV,F1, confMatrix)
 end
 
-confusionMatrix(outputs:: AbstractArray{<:Real}, targets:: AbstractArray{<:Real}, umbral::AbstractArray{<:Real}=0.5) = confusionMatrix(Array{Bool,1}(outputs.>=umbral), targets)
+confusionMatrix(outputs:: AbstractArray{<:Real}, targets:: AbstractArray{<:Real}, umbral::Real=0.5) = confusionMatrix(Array{Bool,1}(outputs.>=umbral), targets)
 
 function unocontratodos(inputs::AbstractArray{Float64, 2}, targets::AbstractArray{Bool,2})
     numClasses = size(targets,2);

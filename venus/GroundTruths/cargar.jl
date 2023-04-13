@@ -319,6 +319,12 @@ numNeighbors = 8
 inputs = convert(Array{Float64, 2}, dataSetImportado[:, 1:2]) 
 targets = reshape((dataSetImportado[:, 3]), :, 1)
 
+#PDF's
+# inputs = dataSetImportado[:, 1:2];
+# inputs = convert(Array{Float32, 2}, inputs);
+# targets = dataSetImportado[:, 3];
+# targets = convert(Array{Bool, 1}, targets);
+
 normalizeMinMax!(inputs);
 
 # Dicionario con los hiperparametros utilizados para el entrenamiento de RNA
@@ -339,7 +345,7 @@ for i in topologies
     modelHyperparameters["topology"] = i
     macc, sacc, mf1, sf1 = modelCrossValidation(:ANN, modelHyperparameters, inputs, targets, numFolds);
     write(salida, string("\nRNA: ", string(i), "\nMedia de precision del test en 10-fold: ", round(macc*100, digits=2)," \nDesviacion tipica del test: ", round(sacc*100, digits=2), "\nMedia de Especificidad de test ", round(mf1*100, digits=2), "\nDesviacion tipica de Especificidad de test ", round(sf1*100, digits=2)))
-end 
+end
 
 # Hiperparametros utilizados para el entrenamiento de SVM
 
