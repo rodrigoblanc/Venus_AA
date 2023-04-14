@@ -8,6 +8,8 @@ pattern_path = mycd*"Venus_AA/venus/GroundTruths/Patrones"
 img_path = mycd*"Venus_AA/venus/imagenes"
 hit_path = mycd*"Venus_AA/venus/hit"
 miss_path = mycd*"Venus_AA/venus/miss"
+hit_path1 = mycd*"Venus_AA/venus/hit1"
+miss_path1 = mycd*"Venus_AA/venus/miss1"
 path = mycd*"Venus_AA/venus"
 
 
@@ -25,10 +27,10 @@ function recortar(coords, imagen)
     image_size = size(imagen)
     rounded_radius = Int(ceil(coords[3])) * K_MULTIPLIER
     
-    start_x = Int(max(1, coords[1] - rounded_radius))
-    end_x = Int(min(coords[1]+rounded_radius, image_size[1]))
-    start_y = Int(max(1, coords[2] - rounded_radius))
-    end_y = Int(min(coords[2]+rounded_radius, image_size[2]))
+    start_x = Int(round(max(1, coords[1] - rounded_radius)))
+    end_x = Int(round(min(coords[1]+rounded_radius, image_size[1])))
+    start_y = Int(round(max(1, coords[2] - rounded_radius)))
+    end_y = Int(round(min(coords[2]+rounded_radius, image_size[2])))
     
     println("recortar-> Recortando:\t("*string(start_x)*","*string(start_y)*")-----"*"("*string(end_x)*","*string(end_y)*")")
 
