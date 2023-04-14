@@ -34,28 +34,26 @@ for image in miss
     push!(second_part, temp)
 end
 
-for image in hit1
+for image in hit1 #Cargo los patrones positivos recortados mas pequeños
     push!(third_part, featureExtraction(image, 0, [0, 1]))
 end
 
-for image in miss1
+for image in miss1#Cargo los patrones negativos recortados mas pequeños
     push!(fourth_part, featureExtraction(image, 1, [0, 1]))
 end
 
 dataSet1 = vcat(first_part, second_part)
 dataSet2 = vcat(third_part, fourth_part)
 
-aux = hcat(dataSet1, dataSet2)
-
 dataSet = []
-
-for fila in aux
-    i = 0
-    for element in fila
-    push!(dataSet[i], element)
-    end
+for fila in dataSet2
+    i = 1
+    dataSet = hcat(dataSet1[i], fila)
     i = i+1
 end
+
+dataSet = hcat(dataSet1, dataSet2)
+#dataSet = cat(dataSet1, dataSet2, dims =(2, 2))
 
 # println(typeof(dataSet)) -> Matrix{Vector{Float64}}
 

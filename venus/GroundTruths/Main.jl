@@ -41,10 +41,10 @@ using Random:seed!
 
 include("funciones.jl")
 
-include("Recortar.jl")
+# include("Recortar.jl")
 
 nAprox = "2"
-include("Aprox"*nAprox*".jl")
+# include("Aprox"*nAprox*".jl")
 
 # Debe ser común a todos los PC's
 #ccd("Venus_AA/venus/GroundTruths/dataset_etiquetado")
@@ -54,8 +54,7 @@ include("Aprox"*nAprox*".jl")
 
 
 dataSetImportado = readdlm(path*"/"*"aprox"*nAprox*".data", '\t')
-
-
+println(dataSetImportado)
 
 #----------------------------------- Creacion de los modelos ----------------------------------------------------------
 
