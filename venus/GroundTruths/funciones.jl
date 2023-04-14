@@ -25,13 +25,13 @@ end
     imagen: Imagen origen que se va a recortar
     k: Constante que multiplica al radio, por defecto tiene el valor 1
 """
-function recortar(coords, imagen, k = 1)
+function recortar(coords, imagen)
 
     #imshow(imagen)
     
     # El radio se redondea hacia arriba para abarcar más area de la que abarcariamos de poder considerar los flotantes
     image_size = size(imagen)
-    rounded_radius = Int(ceil(coords[3])) * k
+    rounded_radius = Int(ceil(coords[3])) * K_MULTIPLIER
     
     start_x = Int(round(max(1, coords[1] - rounded_radius)))
     end_x = Int(round(min(coords[1]+rounded_radius, image_size[1])))
