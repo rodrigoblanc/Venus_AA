@@ -43,7 +43,7 @@ include("funciones.jl")
 
 include("Recortar.jl")
 
-nAprox = "1"
+nAprox = "2"
 include("Aprox"*nAprox*".jl")
 
 # Debe ser común a todos los PC's
