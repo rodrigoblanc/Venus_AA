@@ -116,6 +116,7 @@ end;
 @sk_import tree: DecisionTreeClassifier
 @sk_import neighbors: KNeighborsClassifier 
 
+
 function oneHotEncoding(feature::Matrix{<:Any}, classes::AbstractArray{<:Any, 1})
     unique_classes = unique(classes)
 
@@ -157,6 +158,35 @@ end
 function oneHotEncoding(feature::AbstractArray{Bool,1})
     return reshape(feature, (:,1))
 end
+
+#=
+function oneHotEncoding(feature::AbstractArray{<:Any,1}, classes::AbstractArray{<:Any,1})
+    # Primero se comprueba que todos los elementos del vector esten en el vector de clases (linea adaptada del final de la practica 4)
+    @assert(all([in(value, classes) for value in feature]));
+    numClasses = length(classes);
+    @assert(numClasses>1)
+    if (numClasses==2)
+        # Si solo hay dos clases, se devuelve una matriz con una columna
+        oneHot = reshape(feature.==classes[1], :, 1);
+    else
+        # Si hay mas de dos clases se devuelve una matriz con una columna por clase
+        # Cualquiera de estos dos tipos (Array{Bool,2} o BitArray{2}) vale perfectamente
+        # oneHot = Array{Bool,2}(undef, length(targets), numClasses);
+        oneHot =  BitArray{2}(undef, length(feature), numClasses);
+        for numClass = 1:numClasses
+            oneHot[:,numClass] .= (feature.==classes[numClass]);
+        end;
+    end;
+    return oneHot;
+end;
+# Esta funcion es similar a la anterior, pero si no es especifican las clases, se toman de la propia variable
+oneHotEncoding(feature::AbstractArray{<:Any,1}) = oneHotEncoding(feature, unique(feature));
+# Sobrecargamos la funcion oneHotEncoding por si acaso pasan un vector de valores booleanos
+#  En este caso, el propio vector ya está codificado, simplemente lo convertimos a una matriz columna
+oneHotEncoding(feature::AbstractArray{Bool,1}) = reshape(feature, :, 1);
+# Cuando se llame a la funcion oneHotEncoding, según el tipo del argumento pasado, Julia realizará
+#  la llamada a la función correspondiente
+=#
 
 function calculateMinMaxNormalizationParameters(input::AbstractArray{<:Real,2})
 

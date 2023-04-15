@@ -54,7 +54,7 @@ nAprox = "2"
 
 
 dataSetImportado = readdlm(path*"/"*"aprox"*nAprox*".data", '\t')
-println(dataSetImportado)
+#println(dataSetImportado)
 
 #----------------------------------- Creacion de los modelos ----------------------------------------------------------
 
@@ -92,8 +92,10 @@ maxDepth = 4
 numNeighbors = 8
 
 #Dividimos el dataset en dos (features y targets)
+# Longitud de cada fila de "dataSetImportado"
+numCaracteristicas = size(dataSetImportado, 2)
 inputs = convert(Array{Float64, 2}, dataSetImportado[:, 1:2]) 
-targets = reshape((dataSetImportado[:, 3]), :, 1)
+targets = reshape((dataSetImportado[:, numCaracteristicas]), :, 1)
 
 #PDF's
 # inputs = dataSetImportado[:, 1:2];
