@@ -607,7 +607,8 @@ function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Flo
 
             testOutputs = predict(model, testInputs)
 
-            acc, _, _, spec, _, _, _, _ = confusionMatrix(testOutputs, testTargets, weighted=true)
+            acc, _, _, spec, _, _, _, confus = confusionMatrix(testOutputs, testTargets, weighted=true)
+            println("Plain confusion: ", confus)
         
         else
 
@@ -631,7 +632,9 @@ function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Flo
                     maxEpochs=parameters["maxEpochs"], learningRate=parameters["learningRate"])
                 end
 
-                testAccuraciesPerRepetition[numTraining], _, _, testSpectPerRepetition[numTraining], _, _, _, _ = confusionMatrix(collect(ann(testInputs')'), testTargets, true)
+                testAccuraciesPerRepetition[numTraining], _, _, testSpectPerRepetition[numTraining], _, _, _, confus = confusionMatrix(collect(ann(testInputs')'), testTargets, true)
+                println("Plain confusion: ", confus)
+
             end
 
             acc = mean(testAccuraciesPerRepetition)
@@ -646,6 +649,7 @@ function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Flo
         #println("Results in test in fold ", numFold, "/", numFolds, " : accuracy: ", 100*testAccuracies[numFold], " %, F1: ", 100*testF1[numFold], " %")    
 
     end
+
 
 
     println(model, ": Average test accuracy on ", numFolds, "-fold crossvalidation: ", 100*mean(testAccuracies), ", with a standard desviation of ", 100*std(testAccuracies))

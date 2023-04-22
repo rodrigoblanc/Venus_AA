@@ -1,0 +1,151 @@
+
+RNA: [3]
+Media de precision del test en 10-fold: 21.24 
+Desviacion tipica del test: 5.96
+Media de Especificidad de test 99.61
+Desviacion tipica de Especificidad de test 0.87
+RNA: [1]
+Media de precision del test en 10-fold: 20.89 
+Desviacion tipica del test: 2.54
+Media de Especificidad de test 98.89
+Desviacion tipica de Especificidad de test 1.08
+RNA: [2]
+Media de precision del test en 10-fold: 20.88 
+Desviacion tipica del test: 4.18
+Media de Especificidad de test 99.03
+Desviacion tipica de Especificidad de test 1.17
+RNA: [1, 1]
+Media de precision del test en 10-fold: 20.77 
+Desviacion tipica del test: 3.95
+Media de Especificidad de test 98.64
+Desviacion tipica de Especificidad de test 0.62
+RNA: [1, 2]
+Media de precision del test en 10-fold: 20.89 
+Desviacion tipica del test: 3.74
+Media de Especificidad de test 98.95
+Desviacion tipica de Especificidad de test 1.17
+RNA: [3, 4]
+Media de precision del test en 10-fold: 21.24 
+Desviacion tipica del test: 3.8
+Media de Especificidad de test 99.71
+Desviacion tipica de Especificidad de test 0.61
+RNA: [2, 3]
+Media de precision del test en 10-fold: 20.95 
+Desviacion tipica del test: 5.07
+Media de Especificidad de test 98.84
+Desviacion tipica de Especificidad de test 1.36
+RNA: [5, 5]
+Media de precision del test en 10-fold: 21.29 
+Desviacion tipica del test: 5.35
+Media de Especificidad de test 99.83
+Desviacion tipica de Especificidad de test 0.53
+SVM: con kernel "rbf" y C:0.1
+Media de precision del test en 10-fold: 80.04 
+Desviacion tipica del test: 5.58
+Media de Especificidad de test 0.0
+Desviacion tipica de Especificidad de test 0.0
+SVM: con kernel "rbf" y C:0.6
+Media de precision del test en 10-fold: 85.09 
+Desviacion tipica del test: 3.38
+Media de Especificidad de test 32.89
+Desviacion tipica de Especificidad de test 8.91
+SVM: con kernel "rbf" y C:1
+Media de precision del test en 10-fold: 84.66 
+Desviacion tipica del test: 4.56
+Media de Especificidad de test 39.12
+Desviacion tipica de Especificidad de test 12.82
+SVM: con kernel "poly" y C:0.1
+Media de precision del test en 10-fold: 80.06 
+Desviacion tipica del test: 5.42
+Media de Especificidad de test 0.0
+Desviacion tipica de Especificidad de test 0.0
+SVM: con kernel "poly" y C:0.6
+Media de precision del test en 10-fold: 80.04 
+Desviacion tipica del test: 5.02
+Media de Especificidad de test 0.0
+Desviacion tipica de Especificidad de test 0.0
+SVM: con kernel "poly" y C:1
+Media de precision del test en 10-fold: 80.04 
+Desviacion tipica del test: 5.26
+Media de Especificidad de test 0.0
+Desviacion tipica de Especificidad de test 0.0
+SVM: con kernel "sigmoid" y C:0.1
+Media de precision del test en 10-fold: 80.05 
+Desviacion tipica del test: 4.88
+Media de Especificidad de test 0.0
+Desviacion tipica de Especificidad de test 0.0
+SVM: con kernel "sigmoid" y C:0.6
+Media de precision del test en 10-fold: 79.92 
+Desviacion tipica del test: 4.63
+Media de Especificidad de test 0.83
+Desviacion tipica de Especificidad de test 2.64
+SVM: con kernel "sigmoid" y C:1
+Media de precision del test en 10-fold: 83.11 
+Desviacion tipica del test: 4.13
+Media de Especificidad de test 19.06
+Desviacion tipica de Especificidad de test 11.51
+DECISION TREE: 1
+Media de precision del test en 10-fold: 85.64 
+Desviacion tipica del test: 4.61
+Media de Especificidad de test 49.15
+Desviacion tipica de Especificidad de test 11.86
+DECISION TREE: 3
+Media de precision del test en 10-fold: 86.47 
+Desviacion tipica del test: 2.42
+Media de Especificidad de test 45.32
+Desviacion tipica de Especificidad de test 11.26
+DECISION TREE: 4
+Media de precision del test en 10-fold: 85.07 
+Desviacion tipica del test: 4.38
+Media de Especificidad de test 43.61
+Desviacion tipica de Especificidad de test 14.44
+DECISION TREE: 5
+Media de precision del test en 10-fold: 84.39 
+Desviacion tipica del test: 4.25
+Media de Especificidad de test 43.5
+Desviacion tipica de Especificidad de test 15.7
+DECISION TREE: 6
+Media de precision del test en 10-fold: 83.69 
+Desviacion tipica del test: 4.66
+Media de Especificidad de test 44.31
+Desviacion tipica de Especificidad de test 18.17
+DECISION TREE: 7
+Media de precision del test en 10-fold: 81.59 
+Desviacion tipica del test: 2.14
+Media de Especificidad de test 44.37
+Desviacion tipica de Especificidad de test 11.29
+DECISION TREE: 10
+Media de precision del test en 10-fold: 80.47 
+Desviacion tipica del test: 4.2
+Media de Especificidad de test 43.08
+Desviacion tipica de Especificidad de test 15.51
+KNN: 2
+Media de precision del test en 10-fold: 0.7823356807511737 
+Desviacion tipica del test: 0.02813383065482073
+Media de Especificidad de test 0.6837784796192724
+Desviacion tipica de Especificidad de test 0.08290791096879675
+KNN: 5
+Media de precision del test en 10-fold: 0.8368348982785603 
+Desviacion tipica del test: 0.0584317860260694
+Media de Especificidad de test 0.4720661364779012
+Desviacion tipica de Especificidad de test 0.17372000955904351
+KNN: 8
+Media de precision del test en 10-fold: 0.8451682316118937 
+Desviacion tipica del test: 0.03563691154277584
+Media de Especificidad de test 0.5143681318681319
+Desviacion tipica de Especificidad de test 0.149857223805046
+KNN: 11
+Media de precision del test en 10-fold: 0.8522300469483566 
+Desviacion tipica del test: 0.052042452279431564
+Media de Especificidad de test 0.4646496803849744
+Desviacion tipica de Especificidad de test 0.17051404365810258
+KNN: 14
+Media de precision del test en 10-fold: 0.8508998435054773 
+Desviacion tipica del test: 0.036172941522065655
+Media de Especificidad de test 0.4961866238336826
+Desviacion tipica de Especificidad de test 0.13534903435820841
+KNN: 17
+Media de precision del test en 10-fold: 0.8604264475743347 
+Desviacion tipica del test: 0.035929451301267304
+Media de Especificidad de test 0.47705489685752844
+Desviacion tipica de Especificidad de test 0.09397499851097586

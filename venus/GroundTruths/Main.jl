@@ -41,22 +41,32 @@ using Random:seed!
 
 include("funciones.jl")
 
-#include("Recortar.jl")
+########################### Selección de aproximación ##########################
 
-nAprox = "3"
-#include("Aprox"*nAprox*".jl")
+nAprox = "2"
+
+
+############################# Recortes de patrones #############################
+
+# include("Recortar.jl")
+
+
+########################### Generación del ".data" #############################
+
+# include("Aprox"*nAprox*".jl")
 
 # Debe ser común a todos los PC's
 #ccd("Venus_AA/venus/GroundTruths/dataset_etiquetado")
 
 
-#------------------------------------- Carga del ".data" --------------------------------------------------------------
+########################### Carga del ".data" ##################################
 
 
 dataSetImportado = readdlm(path*"/"*"aprox"*nAprox*".data", '\t')
 #println(dataSetImportado)
 
-#----------------------------------- Creacion de los modelos ----------------------------------------------------------
+
+######################### Creacion de los modelos ##############################
 
 # Importación de los modelos que vamos a emplear
 
@@ -67,11 +77,10 @@ dataSetImportado = readdlm(path*"/"*"aprox"*nAprox*".data", '\t')
 # @sk_import neighbors: KNeighborsClassifier 
 
 
+################################# Código final #################################
 
-#------------------------------------- Código final -------------------------------------------------------------------
 
-
-salida = open("resultados_aprox_1.txt", "w") #Esto lo vamos a ir cambiando en cada aproximación
+salida = open("resultados_aprox_"*nAprox*".txt", "w")
 
 numFolds = 10 
 
