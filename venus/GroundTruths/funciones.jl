@@ -10,6 +10,8 @@ hit_path = mycd*"Venus_AA/venus/hit"
 miss_path = mycd*"Venus_AA/venus/miss"
 hit_path1 = mycd*"Venus_AA/venus/hit1"
 miss_path1 = mycd*"Venus_AA/venus/miss1"
+hit_path2 = mycd*"Venus_AA/venus/hit2"
+miss_path2 = mycd*"Venus_AA/venus/miss2"
 path = mycd*"Venus_AA/venus"
 
 
@@ -32,7 +34,7 @@ function recortar(coords, imagen)
     # El radio se redondea hacia arriba para abarcar más area de la que abarcariamos de poder considerar los flotantes
     image_size = size(imagen)
     rounded_radius = Int(ceil(coords[3])) * K_MULTIPLIER
-    
+
     start_x = Int(round(max(1, coords[1] - rounded_radius)))
     end_x = Int(round(min(coords[1]+rounded_radius, image_size[1])))
     start_y = Int(round(max(1, coords[2] - rounded_radius)))
@@ -50,6 +52,48 @@ function recortar(coords, imagen)
     imagen2 = imagen[start_y:end_y, start_x:end_x]
     #imagen2 = transpose(imagen2)
     return imagen2
+end
+
+function recortar2(coords, imagen)
+
+    #imshow(imagen)
+
+    recortes = []
+    
+    image_size = size(imagen)
+    # El radio se redondea hacia arriba para abarcar más area de la que abarcariamos de poder considerar los flotantes
+    rounded_radius = Int(ceil(coords[3]))
+    #Dividimos el tamaño de la imagen a la mitad para dividir los ejes
+    
+    start_x = Int(round(max(1, coords[1] - rounded_radius)))
+    end_x = Int(round(min(coords[1]+rounded_radius, image_size[1])))
+    start_y = Int(round(max(1, coords[2] - rounded_radius)))
+    end_y = Int(round(min(coords[2]+rounded_radius, image_size[2])))
+
+    middle_x = Int(round((start_x+end_x)/2))
+    middle_y = Int(round((start_y+end_y)/2))
+
+    
+    println("recortar-> Recortando")
+
+    # Las imágenes están traspuestas, habrá que recortar acorde a ello y trasponer
+    # el resultado
+    #= #! transpose warning
+        This operation is intended for linear algebra usage
+        - for general data manipulation see [permutedims](@ref Base.permutedims),
+        which is non-recursive
+    =#
+    recorte1 = imagen[start_y:middle_y, start_x:middle_x]
+    recorte2 = imagen[start_y:middle_y, middle_x:end_x]
+    recorte3 = imagen[middle_y:end_y, start_x:middle_x]
+    recorte4 = imagen[middle_y:end_y, middle_x:end_x]
+
+    push!(recortes,recorte1);
+    push!(recortes,recorte2);
+    push!(recortes,recorte3);
+    push!(recortes,recorte4);
+
+    return recortes
 end
 
 function featureExtraction(image, class::Int64, classes::AbstractArray{<:Any, 1})
