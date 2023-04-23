@@ -96,6 +96,13 @@ function recortar2(coords, imagen)
     return recortes
 end
 
+"""
+    @Entradas:
+        - Imagen de la que extraer la media y la desviación típica
+        - Clase a la que pertenecería el patrón
+    @Salidas:
+        - Un vector con la media, desv. y la clase a la que pertenece el patrón
+"""
 function featureExtraction(image, class::Int64, classes::AbstractArray{<:Any, 1})
     mean_ = mean(image)
     std_ = std(image)
