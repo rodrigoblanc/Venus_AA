@@ -43,7 +43,7 @@ include("funciones.jl")
 
 ########################### Selección de aproximación ##########################
 
-nAprox = "2"
+nAprox = "3"
 
 
 ############################# Recortes de patrones #############################
