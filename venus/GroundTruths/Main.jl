@@ -43,7 +43,7 @@ include("funciones.jl")
 
 ########################### Selección de aproximación ##########################
 
-nAprox = "3"
+nAprox = "2"
 
 
 ############################# Recortes de patrones #############################
@@ -53,7 +53,7 @@ nAprox = "3"
 
 ########################### Generación del ".data" #############################
 
-# include("Aprox"*nAprox*".jl")
+include("Aprox"*nAprox*".jl")
 
 # Debe ser común a todos los PC's
 #ccd("Venus_AA/venus/GroundTruths/dataset_etiquetado")

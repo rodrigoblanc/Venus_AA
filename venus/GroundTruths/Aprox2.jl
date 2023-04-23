@@ -46,13 +46,14 @@ dataSet1 = vcat(first_part, second_part)
 dataSet2 = vcat(third_part, fourth_part)
 
 dataSet = []
+i = 1
 for fila in dataSet2
-    i = 1
-    dataSet = hcat(dataSet1[i], fila)
-    i = i+1
+    new_fila = append!(dataSet1[i], fila)
+    push!(dataSet, new_fila)
+    global i = i+1
 end
 
-dataSet = hcat(dataSet1, dataSet2)
+#dataSet = hcat(dataSet1, dataSet2)
 #dataSet = cat(dataSet1, dataSet2, dims =(2, 2))
 
 # println(typeof(dataSet)) -> Matrix{Vector{Float64}}
