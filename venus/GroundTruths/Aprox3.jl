@@ -51,9 +51,7 @@ for image in miss
     global cont =cont + 1
 end
 
-dataSet1 = vcat(first_part, second_part)
-println(size(dataSet1))
-
+dataSetAux = vcat(first_part, second_part)
 
 
 
@@ -103,7 +101,7 @@ end
 dataSet1 = vcat(first_part, second_part)
 dataSet2 = vcat(third_part, fourth_part)
 
-dataSet = []
+dataSet = [] #Ahora mismo es el dataset de la aprox2
 i = 1
 for fila in dataSet2
     new_fila = append!(dataSet1[i], fila)
@@ -113,15 +111,11 @@ end
 
 
 
-
-
-
-
 dataSet2 = []
 i = 1
 for fila in dataSet
-    new_fila = append!(dataSet1[i], fila)
-    push!(dataSet2, new_fila)
+    append!(dataSetAux[i], fila)
+    #push!(dataSet2, new_fila)
     global i = i+1
 end
 
@@ -147,4 +141,4 @@ filter!(n -> n == 1.0 || n == 0.0, dataSet1)
 =#
 # Guardamos el dataSet en "aprox3.data"
 
-saveAsData(path*"/"*"aprox3.data", dataSet, '\t')
+saveAsData(path*"/"*"aprox3.data", dataSetAux, '\t')
