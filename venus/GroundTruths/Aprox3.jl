@@ -52,14 +52,78 @@ for image in miss
 end
 
 dataSet1 = vcat(first_part, second_part)
-
-println("Size: ")
 println(size(dataSet1))
-println(size(dataSet_aux))
-dataSet = hcat(dataSet1, dataSet_aux)
 
 
 
+
+
+#---------------------------------------- Carga de recortes -----------------------------------------------------------
+
+# Carga de Hit 'n Miss
+
+hit = loadFolderImages(hit_path)
+#hit = positive_images
+
+miss = loadFolderImages(miss_path)
+#miss = negative_images
+
+hit1 = loadFolderImages(hit_path1)
+
+miss1 = loadFolderImages(miss_path1)
+
+#---------------------------------- Extraccion de caracteristicas -----------------------------------------------------
+
+first_part = []
+second_part = []
+third_part = []
+fourth_part = []
+
+
+for image in hit
+    temp = featureExtraction(image, 0, [0, 1])
+    temp = temp[1:2]
+    push!(first_part, temp)
+end
+
+for image in miss
+    temp = featureExtraction(image, 1, [0, 1])
+    temp = temp[1:2]
+    push!(second_part, temp)
+end
+
+for image in hit1 #Cargo los patrones positivos recortados mas pequeños
+    push!(third_part, featureExtraction(image, 0, [0, 1]))
+end
+
+for image in miss1#Cargo los patrones negativos recortados mas pequeños
+    push!(fourth_part, featureExtraction(image, 1, [0, 1]))
+end
+
+dataSet1 = vcat(first_part, second_part)
+dataSet2 = vcat(third_part, fourth_part)
+
+dataSet = []
+i = 1
+for fila in dataSet2
+    new_fila = append!(dataSet1[i], fila)
+    push!(dataSet, new_fila)
+    global i = i+1
+end
+
+
+
+
+
+
+
+dataSet2 = []
+i = 1
+for fila in dataSet
+    new_fila = append!(dataSet1[i], fila)
+    push!(dataSet2, new_fila)
+    global i = i+1
+end
 
 #=
 dataSet1 = []
