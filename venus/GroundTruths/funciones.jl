@@ -614,7 +614,7 @@ function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Flo
 
             testOutputs = predict(model, testInputs)
 
-            acc, _, _, spec, _, _, _, confus = confusionMatrix(testOutputs, testTargets, weighted=true)
+            acc, _, recall, spec, _, _, _, confus = confusionMatrix(testOutputs, testTargets, weighted=true)
             println("Plain confusion: ", confus)
         
         else
@@ -627,6 +627,7 @@ function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Flo
 
             testAccuraciesPerRepetition = Array{Float64, 1}(undef, parameters["numExecutions"])
             testSpectPerRepetition = Array{Float64, 1}(undef, parameters["numExecutions"])
+            testRecallPerRepetition = Array{Float64, 1}(undef, parameters["numExecutions"])
 
             for numTraining in 1:parameters["numExecutions"]
                 if parameters["validationRatio"] > 0
@@ -639,18 +640,20 @@ function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Flo
                     maxEpochs=parameters["maxEpochs"], learningRate=parameters["learningRate"])
                 end
 
-                testAccuraciesPerRepetition[numTraining], _, _, testSpectPerRepetition[numTraining], _, _, _, confus = confusionMatrix(collect(ann(testInputs')'), testTargets, true)
+                testAccuraciesPerRepetition[numTraining], _, testRecallPerRepetition[numTraining], #=testSpectPerRepetition[numTraining]=#_, _, _, _, confus = confusionMatrix(collect(ann(testInputs')'), testTargets, true)
                 println("Plain confusion: ", confus)
 
             end
 
             acc = mean(testAccuraciesPerRepetition)
-            spec = mean(testSpectPerRepetition)
+            #spec = mean(testSpectPerRepetition)
+            recall = mean(testRecallPerRepetition)
 
         end
 
         testAccuracies[numFold] = acc
-        testSpeciticity[numFold] = spec
+        #testSpeciticity[numFold] = spec
+        testRecall[numFold] = recall
 
         
         #println("Results in test in fold ", numFold, "/", numFolds, " : accuracy: ", 100*testAccuracies[numFold], " %, F1: ", 100*testF1[numFold], " %")    
@@ -660,9 +663,9 @@ function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Flo
 
 
     println(model, ": Average test accuracy on ", numFolds, "-fold crossvalidation: ", 100*mean(testAccuracies), ", with a standard desviation of ", 100*std(testAccuracies))
-    println(model, ": Average test specificity on ", numFolds, "-fold crossvalidation: ", 100*mean(testSpeciticity), ", with a standard desviation of ", 100*std(testSpeciticity))
+    println(model, ": Average test recall on ", numFolds, "-fold crossvalidation: ", 100*mean(testRecall), ", with a standard desviation of ", 100*std(testRecall))
 
-    return (mean(testAccuracies), std(testAccuracies), mean(testSpeciticity), std(testSpeciticity))
+    return (mean(testAccuracies), std(testAccuracies), mean(testRecall), std(testRecall))
 
     #return (mean(testAccuracies),std(testAccuracies),mean(testError_rate),std(testError_rate),mean(testRecall),std(testRecall),mean(testSpeciticity),std(testSpeciticity),mean(testPrecision),std(testPrecision),mean(testNegative_predictive_value),std(testNegative_predictive_value),mean(testF1),std(testF1));
 end;
