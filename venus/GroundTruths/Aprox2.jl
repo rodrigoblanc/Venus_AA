@@ -53,15 +53,6 @@ for fila in dataSet2
     global i = i+1
 end
 
-#dataSet = hcat(dataSet1, dataSet2)
-#dataSet = cat(dataSet1, dataSet2, dims =(2, 2))
-
-# println(typeof(dataSet)) -> Matrix{Vector{Float64}}
-
-#normalizeMinMax!(dataSet[1])
-
-# Guardamos el dataSet en "aprox1.data"
-
 saveAsData(path*"/"*"aprox2.data", dataSet, '\t')
 
 
