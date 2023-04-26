@@ -7,7 +7,7 @@ include("funciones.jl")
 # TODO Aqui habria que meter los recortes de la aprox3 (los de dividir la imagen en 4)
 hit = loadFolderImages(hit_path2)
 #hit = positive_images
-#Aqui habria que cargar las miss sin recortar
+# TODO Aqui habria que cargar las miss sin recortar
 miss = loadFolderImages(miss_path3)
 #miss = negative_images
 
@@ -61,7 +61,7 @@ dataSetAux = vcat(first_part, second_part)
 
 # Carga de Hit 'n Miss
 
-# Aqui habria que meter los recortes normales (grandes)
+# TODO Aqui habria que meter los recortes normales (grandes)
 hit = loadFolderImages(hit_path)
 #hit = positive_images
 
