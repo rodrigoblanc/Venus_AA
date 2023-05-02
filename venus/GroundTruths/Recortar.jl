@@ -1,4 +1,5 @@
-include("funciones.jl")
+#Quitamos el include porque ya se hace en el Main, antes de la llamada "include("Recortar.jl")"
+#include("funciones.jl")
 
 # Args
 
@@ -175,8 +176,8 @@ end
 
 
 # Crear el directorio si no existe
-if !isdir(hit_path2)
-    mkdir(hit_path2)
+if !isdir(hit_path3)
+    mkdir(hit_path3)
 end
 global cont = 1
 for (image) in positive_images2
@@ -184,14 +185,14 @@ for (image) in positive_images2
         # Guardar la imagen en el directorio
         name = "recorte"*string(cont)*"_aprox3.png"
         println("saving \""*name*"\"")
-        save(joinpath(hit_path2, name), i)
+        save(joinpath(hit_path3, name), i)
         global cont = cont+1
     end
 end
 
 # Crear el directorio si no existe
-if !isdir(miss_path2)
-    mkdir(miss_path2)
+if !isdir(miss_path3)
+    mkdir(miss_path3)
 end
 global cont = 1
 for (image) in negative_images2
@@ -199,7 +200,7 @@ for (image) in negative_images2
         # Guardar la imagen en el directorio
         name = "recorte"*string(cont)*"_aprox3.png"
         println("saving \""*name*"\"")
-        save(joinpath(miss_path2, name), i)
+        save(joinpath(miss_path3, name), i)
         global cont = cont+1
     end
 end
@@ -229,27 +230,27 @@ end
 
 
 # Crear el directorio si no existe
-if !isdir(hit_path1)
-    mkdir(hit_path1)
+if !isdir(hit_path2)
+    mkdir(hit_path2)
 end
 global cont = 1
 for (image) in positive_images1
     # Guardar la imagen en el directorio
     name = "recorte"*string(cont)*"_aprox2.png"
     println("saving \""*name*"\"")
-    save(joinpath(hit_path1, name), image)
+    save(joinpath(hit_path2, name), image)
     global cont = cont+1
 end
 
 # Crear el directorio si no existe
-if !isdir(miss_path1)
-    mkdir(miss_path1)
+if !isdir(miss_path2)
+    mkdir(miss_path2)
 end
 global cont = 1
 for (image) in negative_images1
     # Guardar la imagen en el directorio
     name = "recorte"*string(cont)*"_aprox2.png"
     println("saving \""*name*"\"")
-    save(joinpath(miss_path1, name), image)
+    save(joinpath(miss_path2, name), image)
     global cont = cont+1
 end

@@ -8,10 +8,10 @@ pattern_path = mycd*"Venus_AA/venus/GroundTruths/Patrones"
 img_path = mycd*"Venus_AA/venus/imagenes"
 hit_path = mycd*"Venus_AA/venus/hit"
 miss_path = mycd*"Venus_AA/venus/miss"
-hit_path1 = mycd*"Venus_AA/venus/hit1"
-miss_path1 = mycd*"Venus_AA/venus/miss1"
 hit_path2 = mycd*"Venus_AA/venus/hit2"
 miss_path2 = mycd*"Venus_AA/venus/miss2"
+hit_path3 = mycd*"Venus_AA/venus/hit3"
+miss_path3 = mycd*"Venus_AA/venus/miss3"
 path = mycd*"Venus_AA/venus"
 
 
