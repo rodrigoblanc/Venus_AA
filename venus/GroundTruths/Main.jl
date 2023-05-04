@@ -44,7 +44,7 @@ include("funciones.jl")
 
 ############################ Preprocesado de datos #############################
 
-#include("Preprocesado.jl")
+include("Preprocesado.jl")
 
 
 ########################### Selección de aproximación ##########################
