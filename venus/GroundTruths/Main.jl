@@ -49,7 +49,7 @@ include("Preprocesado.jl")
 
 ########################### Selección de aproximación ##########################
 
-nAprox = "3"
+nAprox = "4"
 
 
 ############################# Recortes de patrones #############################
@@ -60,7 +60,7 @@ nAprox = "3"
     obtener y cuales no
 =#
 
-recortars = ["1", "2", "3"];
+recortars = ["1", "2", "3", "4"];
 for i in recortars
     include("Recortar"*string(i)*".jl")
 end

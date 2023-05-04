@@ -148,6 +148,8 @@ maxDepth = 4
 
 numNeighbors = 8
 
+dataSetImportado = readdlm(path*"/"*"aprox1.data", '\t')
+
 #Dividimos el dataset en dos (features y targets)
 # Longitud de cada fila de "dataSetImportado"
 numCaracteristicas = size(dataSetImportado, 2)
