@@ -88,11 +88,11 @@ function recortar(imagen, (x, y)::Tuple)
 end
 
 """
-    coords: (X0, Y0, radius)
+    coords: [X0, Y0, radius]
     imagen: Imagen origen que se va a recortar
     k: Constante que multiplica al radio, por defecto tiene el valor 1
 """
-function recortar(coords::Tuple, imagen)
+function recortar(coords, imagen)
 
     #imshow(imagen)
     
@@ -130,6 +130,8 @@ function recortar2(imagen)
     recortes = []
     
     image_size = size(imagen)
+    println("DEBUG:\n \tsize x: "*string(image_size[1]))
+    println("DEBUG:\n \tsize y: "*string(image_size[2]))
 
     #Dividimos el tamaño de la imagen a la mitad para dividir los ejes
     

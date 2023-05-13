@@ -109,6 +109,7 @@ end
 if !isdir(hit_path)
     mkdir(hit_path)
 end
+
 global cont = 1
 for (image) in positive_images
     # Guardar la imagen en el directorio

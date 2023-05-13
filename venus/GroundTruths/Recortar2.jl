@@ -23,6 +23,7 @@ end
 if !isdir(hit_path2)
     mkdir(hit_path2)
 end
+
 global cont = 1
 for (image) in hitMiniCuts
     # Guardar la imagen en el directorio
@@ -36,6 +37,7 @@ end
 if !isdir(miss_path2)
     mkdir(miss_path2)
 end
+
 global cont = 1
 for (image) in missMiniCuts
     # Guardar la imagen en el directorio

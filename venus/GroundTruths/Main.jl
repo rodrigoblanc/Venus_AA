@@ -50,7 +50,7 @@ include("Preprocesado.jl")
 
 ########################### Selección de aproximación ##########################
 
-nAprox = "2"
+nAprox = "3"
 #miss_path = mycd*"Venus_AA/venus/cuts"
 
 ############################# Recortes de patrones #############################
@@ -61,7 +61,7 @@ nAprox = "2"
     obtener y cuales no
 =#
 
-recortars = ["1", "2"];
+recortars = ["1", "2", "3"];
 for i in recortars
     include("Recortar"*string(i)*".jl")
 end
