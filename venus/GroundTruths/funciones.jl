@@ -130,20 +130,23 @@ function recortar2(imagen)
     recortes = []
     
     image_size = size(imagen)
-    println("DEBUG:\n \tsize x: "*string(image_size[1]))
-    println("DEBUG:\n \tsize y: "*string(image_size[2]))
+    println("DEBUG: size x: "*string(image_size[1]))
+    println("DEBUG: size y: "*string(image_size[2]))
 
     #Dividimos el tamaño de la imagen a la mitad para dividir los ejes
     
     start_x = 1
-    end_x = Int(image_size[1])
+    end_x = image_size[1]
     start_y = 1
-    end_y = Int(image_size[2])
+    end_y = image_size[2]
 
     middle_x = Int(round((image_size[1])/2))
     middle_y = Int(round((image_size[2])/2))
 
-    
+    if(end_x == 0 || end_y == 0 || middle_x == 0 || middle_y == 0)
+        error("Error... Invalid image")
+    end
+
     println("recortar-> Recortando")
 
     # Las imágenes están traspuestas, habrá que recortar acorde a ello y trasponer
@@ -154,7 +157,7 @@ function recortar2(imagen)
         which is non-recursive
     =#
     recorte1 = imagen[1:middle_x, 1:middle_y]
-    recorte2 = imagen[middle_x:end_x, middle_y:1]
+    recorte2 = imagen[middle_x:end_x, 1:middle_y]
     recorte3 = imagen[1:middle_x, middle_y:end_y]
     recorte4 = imagen[middle_x:end_x, middle_y:end_y]
 
