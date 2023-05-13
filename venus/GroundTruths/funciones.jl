@@ -15,7 +15,10 @@ hit_path2 = mycd*"Venus_AA/venus/hit2"
 miss_path2 = mycd*"Venus_AA/venus/miss2"
 hit_path3 = mycd*"Venus_AA/venus/hit3"
 miss_path3 = mycd*"Venus_AA/venus/miss3"
-miss_path4 = mycd*"Venus_AA/venus/miss4"
+miss_path_4 = mycd*"Venus_AA/venus/miss_4"
+miss_path2_4 = mycd*"Venus_AA/venus/miss2_4"
+miss_path3_4 = mycd*"Venus_AA/venus/miss3_4"
+cuts_path = mycd*"Venus_AA/venus/cuts"
 path = mycd*"Venus_AA/venus"
 
 
@@ -51,7 +54,7 @@ function recortar(imagen, porcentaje::Float64)
         - for general data manipulation see [permutedims](@ref Base.permutedims),
         which is non-recursive
     =#
-    imagen2 = imagen[start_y:end_y, start_x:end_x]
+    imagen2 = imagen[start_x:end_x, start_y:end_y]
     #imagen2 = transpose(imagen2)
     return imagen2
 end
@@ -130,8 +133,6 @@ function recortar2(imagen)
     recortes = []
     
     image_size = size(imagen)
-    println("DEBUG: size x: "*string(image_size[1]))
-    println("DEBUG: size y: "*string(image_size[2]))
 
     #Dividimos el tamaño de la imagen a la mitad para dividir los ejes
     
@@ -167,6 +168,29 @@ function recortar2(imagen)
     push!(recortes,recorte4);
 
     return recortes
+end
+
+"""
+    @Entradas:
+        - Imagen de la que extraer la media para ampliar, de ser posible hasta
+            tener un tamaño N x M
+        - Tamaño de la imagen "ampliada" a N x M si fue posible
+    @Salidas:
+        - Imagen original si esta tenía un tamaño superior al especificado
+        - Imagen con tamaño N x M, cuyos píxeles añadidos tienen un valor igual
+            a la media de todos los píxeles de la imagen original
+"""
+function ampliarConMediaHastaNM(image, n::Int64, m::Int64)
+    image_size = size(image)
+
+    if (image_size[1] > n && image_size(image) > m)
+        return image
+    end
+    
+    mean_ = mean(image)
+
+
+
 end
 
 """

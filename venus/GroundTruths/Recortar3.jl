@@ -18,8 +18,6 @@ for missImage in missImages
     push!(missMiniCuts, recortar2(missImage))
 end
 
-println(hitMiniCuts[1])
-
 # Crear el directorio si no existe
 if !isdir(hit_path3)
     mkdir(hit_path3)

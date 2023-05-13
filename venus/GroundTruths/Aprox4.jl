@@ -6,7 +6,7 @@
 hit = loadFolderImages(hit_path3)
 #hit = positive_images
 # TODO Aqui habria que cargar las miss sin recortar
-miss = loadFolderImages(miss_path3)
+miss = loadFolderImages(miss_path3_4)
 #miss = negative_images
 
 
@@ -63,14 +63,14 @@ dataSetAux = vcat(first_part, second_part)
 hit = loadFolderImages(hit_path)
 #hit = positive_images
 
-miss = loadFolderImages(miss_path)
+miss = loadFolderImages(cuts_path)
 #miss = negative_images
 
 # TODO Aqui habria que meter los recortes del agujero pequeño (pequeños)
 
-hit1 = loadFolderImages(hit_path2) 
+hit2 = loadFolderImages(hit_path2) 
 
-miss1 = loadFolderImages(miss_path2)
+miss2 = loadFolderImages(miss_path2_4)
 
 #---------------------------------- Extraccion de características -----------------------------------------------------
 
@@ -92,11 +92,11 @@ for image in miss
     push!(second_part, temp)
 end
 
-for image in hit1 #Cargo los patrones positivos recortados mas pequeños
+for image in hit2 #Cargo los patrones positivos recortados mas pequeños
     push!(third_part, featureExtraction(image, 0, [0, 1]))
 end
 
-for image in miss1#Cargo los patrones negativos recortados mas pequeños
+for image in miss2#Cargo los patrones negativos recortados mas pequeños
     push!(fourth_part, featureExtraction(image, 1, [0, 1]))
 end
 
