@@ -8,6 +8,21 @@ using Statistics: mean
 using NaturalSort
 using Colors
 using Images
+using Random
+
+function holdOut(N::Int64, P::Float64)
+    @assert ((P>=0.) & (P<=1.))
+    n = Int(round(N*P, RoundUp, digits=0))
+
+    full_array = randperm(N)
+
+    test_index = full_array[1:n]
+    trainIdex = full_array[n+1:N]
+
+    @assert (size(test_index,1) + size(trainIdex,1) == N)
+
+    return (trainIdex, test_index)
+end
 
 hit_path = "/mnt/d/UNIVERSIDAD/TERCERO/Segundo_Cuatri/AA/Practica/Venus_AA/venus/hit"
 miss_path = "/mnt/d/UNIVERSIDAD/TERCERO/Segundo_Cuatri/AA/Practica/Venus_AA/venus/miss"
@@ -44,12 +59,17 @@ miss = loadFolderImages(miss_path) #Cargamos las imagenes negativas
 
 imagenes = vcat(hit, miss)
 
-train_imgs = imagenes[1:600]
-test_imgs = imagenes[601:717]
+N = length(imagenes)
+P = 0.2  # Proporción para prueba (por ejemplo, 20%)
+
+trainIndex, testIndex = holdOut(N, P)
+
+train_imgs = imagenes[trainIndex]
+test_imgs = imagenes[testIndex]
 
 lbl = vcat(fill(0,574), fill(1,143)) #Todas las etiquetas juntas
-train_labels = lbl[1:600]
-test_labels = lbl[601:717]
+train_labels = lbl[trainIndex]
+test_labels = lbl[testIndex]
 
 # Tanto train_imgs como test_imgs son arrays de arrays bidimensionales (arrays de imagenes), es decir, son del tipo Array{Array{Float32,2},1}
 #  Generalmente en Deep Learning los datos estan en tipo Float32 y no Float64, es decir, tienen menos precision
