@@ -50,6 +50,7 @@ include("Preprocesado.jl")
 
 ########################### Selección de aproximación ##########################
 
+#AQUI SE ESCRIBE LA APROXIMACION QUE SE QUIERE EJECUTAR
 nAprox = "3"
 #miss_path = mycd*"Venus_AA/venus/cuts"
 
@@ -61,7 +62,17 @@ nAprox = "3"
     obtener y cuales no
 =#
 
-recortars = ["1", "2", "3"];
+if nAprox == "1"
+    recortars = ["1"]
+
+elseif nAprox == "2"
+    recortars = ["1", "2"]
+elseif nAprox == "3"
+    recortars = ["1", "2", "3"]
+else
+    recortars = ["1", "2", "3", "4"]
+end
+
 for i in recortars
     include("Recortar"*string(i)*".jl")
 end
