@@ -1,22 +1,21 @@
-#Para recortar las imagenes de la primera aproximacion en 4
+############################# LOADING HIT & MISS ###############################
 
-positive_images2 = []
-negative_images2 = []
+# Carga de Hit 'n Miss
 
-for i=1:size_data
-    for j=1:(size(negative_dataset[i], 1))
-        println(negative_dataset[i][j])
-        recorte = negative_dataset[i][j][2:4]
-        push!(negative_images2, recortar2(recorte, matrix[i]))
-    end
+hitImages = loadFolderImages(hit_path)
+
+missImages = loadFolderImages(miss_path)
+
+hitMiniCuts = []
+
+missMiniCuts = []
+
+for hitImage in hitImages
+    push!(hitMiniCuts, recortar2(hitImage))
 end
 
-for i=1:size_data
-    for j=1:(size(positive_dataset[i], 1))
-        println(positive_dataset[i][j])
-        recorte = positive_dataset[i][j][2:4]
-        push!(positive_images2, recortar2(recorte, matrix[i]))
-    end
+for missImage in missImages
+    push!(missMiniCuts, recortar2(missImage))
 end
 
 
@@ -25,7 +24,7 @@ if !isdir(hit_path3)
     mkdir(hit_path3)
 end
 global cont = 1
-for (image) in positive_images2
+for (image) in hitMiniCuts
     for i in image
         # Guardar la imagen en el directorio
         name = "recorte"*string(cont)*"_aprox3.png"
@@ -40,7 +39,7 @@ if !isdir(miss_path3)
     mkdir(miss_path3)
 end
 global cont = 1
-for (image) in negative_images2
+for (image) in missMiniCuts
     for i in image
         # Guardar la imagen en el directorio
         name = "recorte"*string(cont)*"_aprox3.png"

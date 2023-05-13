@@ -6,12 +6,16 @@ include("Practica4.jl")
 
 pattern_path = mycd*"Venus_AA/venus/GroundTruths/Patrones"
 img_path = mycd*"Venus_AA/venus/imagenes"
+
+# Imágenes recortadas a mano
+img_path4 = mycd*"Venus_AA/venus/cuts"
 hit_path = mycd*"Venus_AA/venus/hit"
 miss_path = mycd*"Venus_AA/venus/miss"
 hit_path2 = mycd*"Venus_AA/venus/hit2"
 miss_path2 = mycd*"Venus_AA/venus/miss2"
 hit_path3 = mycd*"Venus_AA/venus/hit3"
 miss_path3 = mycd*"Venus_AA/venus/miss3"
+miss_path4 = mycd*"Venus_AA/venus/miss4"
 path = mycd*"Venus_AA/venus"
 
 
@@ -21,13 +25,74 @@ function ccd(relativeLocation::String)
     cd(mycd*relativeLocation)
 end
 
+"""
+    imagen: Imagen origen que se va a recortar
+    porcentaje: Autoexplicativo
+"""
+function recortar(imagen, porcentaje::Float64)
+    #imshow(imagen)
+    
+    image_size = size(imagen)
+
+    #Dividimos el tamaño de la imagen a la mitad para dividir los ejes
+
+    middle_x = Int(round((image_size[1])/2))
+    middle_y = Int(round((image_size[2])/2))
+    
+    start_x = Int(round(middle_x-(image_size[1]*porcentaje/2)))
+    end_x = Int(round(middle_x+(image_size[1]*porcentaje/2)))
+    start_y = Int(round(middle_y-(image_size[2]*porcentaje/2)))
+    end_y = Int(round(middle_y+(image_size[2]*porcentaje/2)))
+
+    # Las imágenes están traspuestas, habrá que recortar acorde a ello y trasponer
+    # el resultado
+    #= #! transpose warning
+        This operation is intended for linear algebra usage
+        - for general data manipulation see [permutedims](@ref Base.permutedims),
+        which is non-recursive
+    =#
+    imagen2 = imagen[start_y:end_y, start_x:end_x]
+    #imagen2 = transpose(imagen2)
+    return imagen2
+end
+
+"""
+    imagen: Imagen origen que se va a recortar
+    (x, y): Tamaño del rectángulo que se quiere recortar
+"""
+function recortar(imagen, (x, y)::Tuple)
+    #imshow(imagen)
+    
+    image_size = size(imagen)
+    # El radio se redondea hacia arriba para abarcar más area de la que abarcariamos de poder considerar los flotantes
+    #Dividimos el tamaño de la imagen a la mitad para dividir los ejes
+
+    middle_x = Int(round((start_x+end_x)/2))
+    middle_y = Int(round((start_y+end_y)/2))
+    
+    start_x = middle_x-x
+    end_x = middle_x+x
+    start_y = middle_y-y
+    end_y = middle_y+y
+
+    # Las imágenes están traspuestas, habrá que recortar acorde a ello y trasponer
+    # el resultado
+    #= #! transpose warning
+        This operation is intended for linear algebra usage
+        - for general data manipulation see [permutedims](@ref Base.permutedims),
+        which is non-recursive
+    =#
+    imagen2 = imagen[start_y:end_y, start_x:end_x]
+    #imagen2 = transpose(imagen2)
+    return imagen2
+end
 
 """
     coords: (X0, Y0, radius)
     imagen: Imagen origen que se va a recortar
     k: Constante que multiplica al radio, por defecto tiene el valor 1
 """
-function recortar(coords, imagen)
+function recortar(coords::Tuple, imagen)
 
     #imshow(imagen)
     
@@ -54,24 +119,27 @@ function recortar(coords, imagen)
     return imagen2
 end
 
-function recortar2(coords, imagen)
+
+"""
+    imagen: Imagen origen que se va a recortar en 4 imagenes
+"""
+function recortar2(imagen)
 
     #imshow(imagen)
 
     recortes = []
     
     image_size = size(imagen)
-    # El radio se redondea hacia arriba para abarcar más area de la que abarcariamos de poder considerar los flotantes
-    rounded_radius = Int(ceil(coords[3]))
+
     #Dividimos el tamaño de la imagen a la mitad para dividir los ejes
     
-    start_x = Int(round(max(1, coords[1] - rounded_radius)))
-    end_x = Int(round(min(coords[1]+rounded_radius, image_size[1])))
-    start_y = Int(round(max(1, coords[2] - rounded_radius)))
-    end_y = Int(round(min(coords[2]+rounded_radius, image_size[2])))
+    start_x = 1
+    end_x = Int(image_size[1])
+    start_y = 1
+    end_y = Int(image_size[2])
 
-    middle_x = Int(round((start_x+end_x)/2))
-    middle_y = Int(round((start_y+end_y)/2))
+    middle_x = Int(round((image_size[1])/2))
+    middle_y = Int(round((image_size[2])/2))
 
     
     println("recortar-> Recortando")
@@ -83,10 +151,10 @@ function recortar2(coords, imagen)
         - for general data manipulation see [permutedims](@ref Base.permutedims),
         which is non-recursive
     =#
-    recorte1 = imagen[start_y:middle_y, start_x:middle_x]
-    recorte2 = imagen[start_y:middle_y, middle_x:end_x]
-    recorte3 = imagen[middle_y:end_y, start_x:middle_x]
-    recorte4 = imagen[middle_y:end_y, middle_x:end_x]
+    recorte1 = imagen[1:middle_x, 1:middle_y]
+    recorte2 = imagen[middle_x:end_x, middle_y:1]
+    recorte3 = imagen[1:middle_x, middle_y:end_y]
+    recorte4 = imagen[middle_x:end_x, middle_y:end_y]
 
     push!(recortes,recorte1);
     push!(recortes,recorte2);
@@ -121,7 +189,7 @@ function count(dir::String)
     filter!(endswith(".png"), content)
     global num =0
     for i in content
-            num +=1
+        num +=1
     end
 end
 

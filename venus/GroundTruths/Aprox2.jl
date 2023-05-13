@@ -1,5 +1,3 @@
-include("funciones.jl")
-
 #---------------------------------------- Carga de recortes -----------------------------------------------------------
 
 # Carga de Hit 'n Miss
@@ -10,9 +8,9 @@ hit = loadFolderImages(hit_path)
 miss = loadFolderImages(miss_path)
 #miss = negative_images
 
-hit1 = loadFolderImages(hit_path1)
+hit2 = loadFolderImages(hit_path2)
 
-miss1 = loadFolderImages(miss_path1)
+miss2 = loadFolderImages(miss_path2)
 
 #---------------------------------- Extraccion de caracteristicas -----------------------------------------------------
 
@@ -34,11 +32,11 @@ for image in miss
     push!(second_part, temp)
 end
 
-for image in hit1 #Cargo los patrones positivos recortados mas pequeños
+for image in hit2 #Cargo los patrones positivos recortados mas pequeños
     push!(third_part, featureExtraction(image, 0, [0, 1]))
 end
 
-for image in miss1#Cargo los patrones negativos recortados mas pequeños
+for image in miss2#Cargo los patrones negativos recortados mas pequeños
     push!(fourth_part, featureExtraction(image, 1, [0, 1]))
 end
 

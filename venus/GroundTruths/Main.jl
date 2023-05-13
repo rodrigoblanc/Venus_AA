@@ -5,10 +5,10 @@ import Pkg;
 using DelimitedFiles
 
 #Pkg.add("JLD2")
-using JLD2
+#using JLD2
 
 #Pkg.add("Plots")
-using Plots
+#using Plots
 
 #Pkg.add("Colors")
 using Colors
@@ -39,6 +39,7 @@ using Flux.Losses
 using Random
 using Random:seed!
 
+# Incluimos las funciones para poder ejecutar las "operaciones" posteriores
 include("funciones.jl")
 
 
@@ -49,8 +50,8 @@ include("Preprocesado.jl")
 
 ########################### Selección de aproximación ##########################
 
-nAprox = "4"
-
+nAprox = "2"
+#miss_path = mycd*"Venus_AA/venus/cuts"
 
 ############################# Recortes de patrones #############################
 
@@ -60,7 +61,7 @@ nAprox = "4"
     obtener y cuales no
 =#
 
-recortars = ["1", "2", "3", "4"];
+recortars = ["1", "2"];
 for i in recortars
     include("Recortar"*string(i)*".jl")
 end
