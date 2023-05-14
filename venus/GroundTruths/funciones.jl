@@ -1,32 +1,27 @@
-include("personal.jl")
 include("Practica4.jl")
 
 
 # PATHS
 
-pattern_path = mycd*"Venus_AA/venus/GroundTruths/Patrones"
-img_path = mycd*"Venus_AA/venus/imagenes"
+pattern_path = pwd()*"Venus_AA/venus/GroundTruths/Patrones"
+img_path = pwd()*"Venus_AA/venus/imagenes"
 
 # Imágenes recortadas a mano
-img_path4 = mycd*"Venus_AA/venus/cuts"
-hit_path = mycd*"Venus_AA/venus/hit"
-miss_path = mycd*"Venus_AA/venus/miss"
-hit_path2 = mycd*"Venus_AA/venus/hit2"
-miss_path2 = mycd*"Venus_AA/venus/miss2"
-hit_path3 = mycd*"Venus_AA/venus/hit3"
-miss_path3 = mycd*"Venus_AA/venus/miss3"
-miss_path_4 = mycd*"Venus_AA/venus/miss_4"
-miss_path2_4 = mycd*"Venus_AA/venus/miss2_4"
-miss_path3_4 = mycd*"Venus_AA/venus/miss3_4"
-cuts_path = mycd*"Venus_AA/venus/cuts"
-path = mycd*"Venus_AA/venus"
+img_path4 = pwd()*"Venus_AA/venus/cuts"
+hit_path = pwd()*"Venus_AA/venus/hit"
+miss_path = pwd()*"Venus_AA/venus/miss"
+hit_path2 = pwd()*"Venus_AA/venus/hit2"
+miss_path2 = pwd()*"Venus_AA/venus/miss2"
+hit_path3 = pwd()*"Venus_AA/venus/hit3"
+miss_path3 = pwd()*"Venus_AA/venus/miss3"
+miss_path_4 = pwd()*"Venus_AA/venus/miss_4"
+miss_path2_4 = pwd()*"Venus_AA/venus/miss2_4"
+miss_path3_4 = pwd()*"Venus_AA/venus/miss3_4"
+cuts_path = pwd()*"Venus_AA/venus/cuts"
+path = pwd()*"Venus_AA/venus"
 
 
 K_MULTIPLIER = 1 #Esto sirve para el radio que se usa para recortar
-
-function ccd(relativeLocation::String)
-    cd(mycd*relativeLocation)
-end
 
 """
     imagen: Imagen origen que se va a recortar

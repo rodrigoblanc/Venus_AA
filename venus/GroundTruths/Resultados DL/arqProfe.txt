@@ -1,0 +1,41 @@
+Ciclo 0: Precision en el conjunto de entrenamiento: 79.84315134099617 %
+Comenzando entrenamiento...
+Ciclo 1: Precision en el conjunto de entrenamiento: 79.84315134099617 %
+   Mejora en el conjunto de entrenamiento -> Precision en el conjunto de test: 81.25 %
+Ciclo 2: Precision en el conjunto de entrenamiento: 79.84315134099617 %
+   Mejora en el conjunto de entrenamiento -> Precision en el conjunto de test: 81.25 %
+Ciclo 3: Precision en el conjunto de entrenamiento: 78.9750957854406 %
+Ciclo 4: Precision en el conjunto de entrenamiento: 78.28065134099617 %
+Ciclo 5: Precision en el conjunto de entrenamiento: 78.28065134099617 %
+Ciclo 6: Precision en el conjunto de entrenamiento: 78.10704022988504 %
+Ciclo 7: Precision en el conjunto de entrenamiento: 77.58620689655173 %
+   No se ha mejorado en 5 ciclos, se baja la tasa de aprendizaje a 0.0001
+Ciclo 8: Precision en el conjunto de entrenamiento: 77.58620689655173 %
+Ciclo 9: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 10: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 11: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 12: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+   No se ha mejorado en 5 ciclos, se baja la tasa de aprendizaje a 1.0e-5
+Ciclo 13: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 14: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 15: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 16: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 17: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+   No se ha mejorado en 5 ciclos, se baja la tasa de aprendizaje a 1.0000000000000002e-6
+Ciclo 18: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 19: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 20: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 21: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 22: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+   No se ha mejorado en 5 ciclos, se baja la tasa de aprendizaje a 1.0000000000000002e-7
+Ciclo 23: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 24: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 25: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 26: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 27: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 28: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 29: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 30: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 31: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+Ciclo 32: Precision en el conjunto de entrenamiento: 77.4125957854406 %
+   Se para el entrenamiento por no haber mejorado la precision en el conjunto de entrenamiento durante 10 ciclos
