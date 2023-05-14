@@ -1,0 +1,23 @@
+########################### Ejecución del código ###############################
+
+Es necesario ejecutarlo de la siguiente manera, para que funcionen bien los
+paths que hay en el código
+
+El archivo "Main.jl" se encuentra en el siguiente PATH:
+?/x/venus/GroundTruths/Main.jl
+
+Nos posicionamos en el directorio que contiene el subdirectorio
+    /venus/Grou.../Main.jl
+
+cd ?/x/
+
+Ejecutamos el archivo principal:
+
+julia ./venus/GroundTruths/Main.jl
+
+########################### Cambio de aproximación #############################
+
+Para cambiar la aproximación y poder obtener resultados de la misma manera
+en la que nosotros los hemos ido obteniendo.
+
+Hay que ir al código y cambiarle el valor a "nAprox" por el deseado.
