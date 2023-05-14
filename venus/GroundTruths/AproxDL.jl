@@ -23,8 +23,8 @@ function holdOut(N::Int64, P::Float64)
     return (trainIdex, test_index)
 end
 
-hit_path = "M:/Javi/Escritorio/Venus_AA/venus/hit"
-miss_path = "M:/Javi/Escritorio/Venus_AA/venus/miss"
+hit_path = pwd()*"/venus/hit"
+miss_path = pwd()*"/venus/miss"
 
  #=
 train_imgs   = load("MNIST.jld2", "train_imgs");

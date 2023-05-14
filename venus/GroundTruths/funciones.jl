@@ -3,22 +3,22 @@ include("Practica4.jl")
 
 # PATHS
 
-pattern_path = pwd()*"Venus_AA/venus/GroundTruths/Patrones"
-img_path = pwd()*"Venus_AA/venus/imagenes"
+pattern_path = pwd()*"/venus/GroundTruths/Patrones"
+img_path = pwd()*"/venus/imagenes"
 
 # Imágenes recortadas a mano
-img_path4 = pwd()*"Venus_AA/venus/cuts"
-hit_path = pwd()*"Venus_AA/venus/hit"
-miss_path = pwd()*"Venus_AA/venus/miss"
-hit_path2 = pwd()*"Venus_AA/venus/hit2"
-miss_path2 = pwd()*"Venus_AA/venus/miss2"
-hit_path3 = pwd()*"Venus_AA/venus/hit3"
-miss_path3 = pwd()*"Venus_AA/venus/miss3"
-miss_path_4 = pwd()*"Venus_AA/venus/miss_4"
-miss_path2_4 = pwd()*"Venus_AA/venus/miss2_4"
-miss_path3_4 = pwd()*"Venus_AA/venus/miss3_4"
-cuts_path = pwd()*"Venus_AA/venus/cuts"
-path = pwd()*"Venus_AA/venus"
+img_path4 = pwd()*"/venus/cuts"
+hit_path = pwd()*"/venus/hit"
+miss_path = pwd()*"/venus/miss"
+hit_path2 = pwd()*"/venus/hit2"
+miss_path2 = pwd()*"/venus/miss2"
+hit_path3 = pwd()*"/venus/hit3"
+miss_path3 = pwd()*"/venus/miss3"
+miss_path_4 = pwd()*"/venus/miss_4"
+miss_path2_4 = pwd()*"/venus/miss2_4"
+miss_path3_4 = pwd()*"/venus/miss3_4"
+cuts_path = pwd()*"/venus/cuts"
+path = pwd()*"/venus"
 
 
 K_MULTIPLIER = 1 #Esto sirve para el radio que se usa para recortar
