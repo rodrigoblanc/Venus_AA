@@ -1,4 +1,3 @@
-
 using Flux
 using Flux.Losses
 using Flux: params
@@ -57,6 +56,9 @@ end;
 hit = loadFolderImages(hit_path) #Cargamos las imagenes positivas
 miss = loadFolderImages(miss_path) #Cargamos las imagenes negativas
 
+n_hit = length(hit)
+n_miss = length(miss)
+
 imagenes = vcat(hit, miss)
 
 N = length(imagenes)
@@ -67,7 +69,7 @@ trainIndex, testIndex = holdOut(N, P)
 train_imgs = imagenes[trainIndex]
 test_imgs = imagenes[testIndex]
 
-lbl = vcat(fill(0,574), fill(1,143)) #Todas las etiquetas juntas
+lbl = vcat(fill(0,n_hit), fill(1,n_miss)) #Todas las etiquetas juntas
 train_labels = lbl[trainIndex]
 test_labels = lbl[testIndex]
 
@@ -138,13 +140,10 @@ train_imgs = nothing;
 test_imgs = nothing;
 GC.gc(); # Pasar el recolector de basura
 
-
-
-
 funcionTransferenciaCapasConvolucionales = relu;
 
-# Definimos la red con la funcion Chain, que concatena distintas capas
-ann = Chain(
+ann1 = # Definimos la red con la funcion Chain, que concatena distintas capas
+Chain(
 #Parece que Dani parte de 36 imágenes.
     # Primera capa: convolucion, que opera sobre una imagen 28x28
     # Argumentos:
@@ -225,108 +224,131 @@ ann = Chain(
 
 )
 
+ann2 = Chain(
+    Conv((3, 3), 1 => 32, pad=(1,1), funcionTransferenciaCapasConvolucionales),
+    Conv((3, 3), 32 => 32, pad=(1,1), funcionTransferenciaCapasConvolucionales),
+    MaxPool((2, 2)),
+    Conv((3, 3), 32 => 64, pad=(1,1), funcionTransferenciaCapasConvolucionales),
+    Conv((3, 3), 64 => 64, pad=(1,1), funcionTransferenciaCapasConvolucionales),
+    MaxPool((2, 2)),
+    Conv((3, 3), 64 => 128, pad=(1,1), funcionTransferenciaCapasConvolucionales),
+    Conv((3, 3), 128 => 128, pad=(1,1), funcionTransferenciaCapasConvolucionales),
+    MaxPool((2, 2)),
+    Flux.flatten,
+    Dense(3 * 3 * 128, 512, relu),
+    Dense(512, 2, σ),
+)
+
+array_ann = []
+
+push!(array_ann, ann2)
+
+    # Vamos a probar la RNA capa por capa y poner algunos datos de cada capa
+    # Usaremos como entrada varios patrones de un batch
+    numBatchCoger = 1; numImagenEnEseBatch = [12, 6];
+    # Para coger esos patrones de ese batch:
+    #  train_set es un array de tuplas (una tupla por batch), donde, en cada tupla, el primer elemento son las entradas y el segundo las salidas deseadas
+    #  Por tanto:
+    #   train_set[numBatchCoger] -> La tupla del batch seleccionado
+    #   train_set[numBatchCoger][1] -> El primer elemento de esa tupla, es decir, las entradas de ese batch
+    #   train_set[numBatchCoger][1][:,:,:,numImagenEnEseBatch] -> Los patrones seleccionados de las entradas de ese batch
+    entradaCapa = train_set[numBatchCoger][1][:,:,:,numImagenEnEseBatch];
+
+function train_ann(ann)
+
+    numCapas = length(params(ann));
+    println("La RNA tiene ", numCapas, " capas:");
+    for numCapa in 1:numCapas
+        println("   Capa ", numCapa, ": ", ann[numCapa]);
+        # Le pasamos la entrada a esta capa
+        global entradaCapa # Esta linea es necesaria porque la variable entradaCapa es global y se modifica en este bucle
+        capa = ann[numCapa];
+        salidaCapa = capa(entradaCapa);
+        println("      La salida de esta capa tiene dimension ", size(salidaCapa));
+        entradaCapa = salidaCapa;
+    end
+
+    # Sin embargo, para aplicar un patron no hace falta hacer todo eso.
+    #  Se puede aplicar patrones a la RNA simplemente haciendo, por ejemplo
+    ann(train_set[numBatchCoger][1][:,:,:,numImagenEnEseBatch]);
 
 
 
 
-# Vamos a probar la RNA capa por capa y poner algunos datos de cada capa
-# Usaremos como entrada varios patrones de un batch
-numBatchCoger = 1; numImagenEnEseBatch = [12, 6];
-# Para coger esos patrones de ese batch:
-#  train_set es un array de tuplas (una tupla por batch), donde, en cada tupla, el primer elemento son las entradas y el segundo las salidas deseadas
-#  Por tanto:
-#   train_set[numBatchCoger] -> La tupla del batch seleccionado
-#   train_set[numBatchCoger][1] -> El primer elemento de esa tupla, es decir, las entradas de ese batch
-#   train_set[numBatchCoger][1][:,:,:,numImagenEnEseBatch] -> Los patrones seleccionados de las entradas de ese batch
-entradaCapa = train_set[numBatchCoger][1][:,:,:,numImagenEnEseBatch];
-numCapas = length(params(ann));
-println("La RNA tiene ", numCapas, " capas:");
-for numCapa in 1:numCapas
-    println("   Capa ", numCapa, ": ", ann[numCapa]);
-    # Le pasamos la entrada a esta capa
-    global entradaCapa # Esta linea es necesaria porque la variable entradaCapa es global y se modifica en este bucle
-    capa = ann[numCapa];
-    salidaCapa = capa(entradaCapa);
-    println("      La salida de esta capa tiene dimension ", size(salidaCapa));
-    entradaCapa = salidaCapa;
+    # Definimos la funcion de loss de forma similar a las prácticas de la asignatura
+    loss(x, y) = (size(y,1) == 1) ? Losses.binarycrossentropy(ann(x),y) : Losses.crossentropy(ann(x),y);
+    # Para calcular la precisión, hacemos un "one cold encoding" de las salidas del modelo y de las salidas deseadas, y comparamos ambos vectores
+    accuracy(batch) = mean(onecold(ann(batch[1])) .== onecold(batch[2]));
+    # Un batch es una tupla (entradas, salidasDeseadas), asi que batch[1] son las entradas, y batch[2] son las salidas deseadas
+
+
+    # Mostramos la precision antes de comenzar el entrenamiento:
+    #  train_set es un array de batches
+    #  accuracy recibe como parametro un batch
+    #  accuracy.(train_set) hace un broadcast de la funcion accuracy a todos los elementos del array train_set
+    #   y devuelve un array con los resultados
+    #  Por tanto, mean(accuracy.(train_set)) calcula la precision promedia
+    #   (no es totalmente preciso, porque el ultimo batch tiene menos elementos, pero es una diferencia baja)
+    println("Ciclo 0: Precision en el conjunto de entrenamiento: ", 100*mean(accuracy.(train_set)), " %");
+
+
+    # Optimizador que se usa: ADAM, con esta tasa de aprendizaje:
+    opt = ADAM(0.001);
+
+
+    println("Comenzando entrenamiento...")
+    global mejorPrecision = -Inf;
+    global criterioFin = false;
+    global numCiclo = 0;
+    global numCicloUltimaMejora = 0;
+    global mejorModelo = nothing;
+
+    while (!criterioFin)
+
+        # Hay que declarar las variables globales que van a ser modificadas en el interior del bucle
+        global numCicloUltimaMejora, numCiclo, mejorPrecision, mejorModelo, criterioFin;
+
+        # Se entrena un ciclo
+        Flux.train!(loss, params(ann), train_set, opt);
+
+        global numCiclo += 1;
+
+        # Se calcula la precision en el conjunto de entrenamiento:
+        global precisionEntrenamiento = mean(accuracy.(train_set));
+        println("Ciclo ", numCiclo, ": Precision en el conjunto de entrenamiento: ", 100*precisionEntrenamiento, " %");
+
+        # Si se mejora la precision en el conjunto de entrenamiento, se calcula la de test y se guarda el modelo
+        if (precisionEntrenamiento >= mejorPrecision)
+            global mejorPrecision = precisionEntrenamiento;
+            global precisionTest = accuracy(test_set);
+            println("   Mejora en el conjunto de entrenamiento -> Precision en el conjunto de test: ", 100*precisionTest, " %");
+            global mejorModelo = deepcopy(ann);
+            global numCicloUltimaMejora = numCiclo;
+        end
+
+        # Si no se ha mejorado en 5 ciclos, se baja la tasa de aprendizaje
+        if (numCiclo - numCicloUltimaMejora >= 5) && (opt.eta > 1e-6)
+            opt.eta /= 10.0
+            println("   No se ha mejorado en 5 ciclos, se baja la tasa de aprendizaje a ", opt.eta);
+            global numCicloUltimaMejora = numCiclo;
+        end
+
+        # Criterios de parada:
+
+        # Si la precision en entrenamiento es lo suficientemente buena, se para el entrenamiento
+        if (precisionEntrenamiento >= 0.999)
+            println("   Se para el entenamiento por haber llegado a una precision de 99.9%")
+            global criterioFin = true;
+        end
+
+        # Si no se mejora la precision en el conjunto de entrenamiento durante 10 ciclos, se para el entrenamiento
+        if (numCiclo - numCicloUltimaMejora >= 10)
+            println("   Se para el entrenamiento por no haber mejorado la precision en el conjunto de entrenamiento durante 10 ciclos")
+            global criterioFin = true;
+        end
+    end
 end
 
-# Sin embargo, para aplicar un patron no hace falta hacer todo eso.
-#  Se puede aplicar patrones a la RNA simplemente haciendo, por ejemplo
-ann(train_set[numBatchCoger][1][:,:,:,numImagenEnEseBatch]);
-
-
-
-
-# Definimos la funcion de loss de forma similar a las prácticas de la asignatura
-loss(x, y) = (size(y,1) == 1) ? Losses.binarycrossentropy(ann(x),y) : Losses.crossentropy(ann(x),y);
-# Para calcular la precisión, hacemos un "one cold encoding" de las salidas del modelo y de las salidas deseadas, y comparamos ambos vectores
-accuracy(batch) = mean(onecold(ann(batch[1])) .== onecold(batch[2]));
-# Un batch es una tupla (entradas, salidasDeseadas), asi que batch[1] son las entradas, y batch[2] son las salidas deseadas
-
-
-# Mostramos la precision antes de comenzar el entrenamiento:
-#  train_set es un array de batches
-#  accuracy recibe como parametro un batch
-#  accuracy.(train_set) hace un broadcast de la funcion accuracy a todos los elementos del array train_set
-#   y devuelve un array con los resultados
-#  Por tanto, mean(accuracy.(train_set)) calcula la precision promedia
-#   (no es totalmente preciso, porque el ultimo batch tiene menos elementos, pero es una diferencia baja)
-println("Ciclo 0: Precision en el conjunto de entrenamiento: ", 100*mean(accuracy.(train_set)), " %");
-
-
-# Optimizador que se usa: ADAM, con esta tasa de aprendizaje:
-opt = ADAM(0.001);
-
-
-println("Comenzando entrenamiento...")
-mejorPrecision = -Inf;
-criterioFin = false;
-numCiclo = 0;
-numCicloUltimaMejora = 0;
-mejorModelo = nothing;
-
-while (!criterioFin)
-
-    # Hay que declarar las variables globales que van a ser modificadas en el interior del bucle
-    global numCicloUltimaMejora, numCiclo, mejorPrecision, mejorModelo, criterioFin;
-
-    # Se entrena un ciclo
-    Flux.train!(loss, params(ann), train_set, opt);
-
-    numCiclo += 1;
-
-    # Se calcula la precision en el conjunto de entrenamiento:
-    precisionEntrenamiento = mean(accuracy.(train_set));
-    println("Ciclo ", numCiclo, ": Precision en el conjunto de entrenamiento: ", 100*precisionEntrenamiento, " %");
-
-    # Si se mejora la precision en el conjunto de entrenamiento, se calcula la de test y se guarda el modelo
-    if (precisionEntrenamiento >= mejorPrecision)
-        mejorPrecision = precisionEntrenamiento;
-        precisionTest = accuracy(test_set);
-        println("   Mejora en el conjunto de entrenamiento -> Precision en el conjunto de test: ", 100*precisionTest, " %");
-        mejorModelo = deepcopy(ann);
-        numCicloUltimaMejora = numCiclo;
-    end
-
-    # Si no se ha mejorado en 5 ciclos, se baja la tasa de aprendizaje
-    if (numCiclo - numCicloUltimaMejora >= 5) && (opt.eta > 1e-6)
-        opt.eta /= 10.0
-        println("   No se ha mejorado en 5 ciclos, se baja la tasa de aprendizaje a ", opt.eta);
-        numCicloUltimaMejora = numCiclo;
-    end
-
-    # Criterios de parada:
-
-    # Si la precision en entrenamiento es lo suficientemente buena, se para el entrenamiento
-    if (precisionEntrenamiento >= 0.999)
-        println("   Se para el entenamiento por haber llegado a una precision de 99.9%")
-        criterioFin = true;
-    end
-
-    # Si no se mejora la precision en el conjunto de entrenamiento durante 10 ciclos, se para el entrenamiento
-    if (numCiclo - numCicloUltimaMejora >= 10)
-        println("   Se para el entrenamiento por no haber mejorado la precision en el conjunto de entrenamiento durante 10 ciclos")
-        criterioFin = true;
-    end
+for ann in array_ann
+    train_ann(ann) 
 end
