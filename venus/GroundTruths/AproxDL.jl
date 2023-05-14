@@ -225,23 +225,49 @@ Chain(
 )
 
 ann2 = Chain(
-    Conv((3, 3), 1 => 32, pad=(1,1), funcionTransferenciaCapasConvolucionales),
-    Conv((3, 3), 32 => 32, pad=(1,1), funcionTransferenciaCapasConvolucionales),
-    MaxPool((2, 2)),
-    Conv((3, 3), 32 => 64, pad=(1,1), funcionTransferenciaCapasConvolucionales),
-    Conv((3, 3), 64 => 64, pad=(1,1), funcionTransferenciaCapasConvolucionales),
-    MaxPool((2, 2)),
-    Conv((3, 3), 64 => 128, pad=(1,1), funcionTransferenciaCapasConvolucionales),
-    Conv((3, 3), 128 => 128, pad=(1,1), funcionTransferenciaCapasConvolucionales),
-    MaxPool((2, 2)),
-    Flux.flatten,
-    Dense(3 * 3 * 128, 512, relu),
-    Dense(512, 2, σ),
+    Conv((5, 5), 1=>32, pad=(2,2), relu),
+    MaxPool((2,2)),
+    Conv((5, 5), 32=>64, pad=(2,2), relu),
+    MaxPool((2,2)),
+    Conv((5, 5), 64=>128, pad=(2,2), relu),
+    MaxPool((2,2)),
+    x -> reshape(x, :, size(x, 4)),
+    Dense(1152, 2, σ)
+)
+
+ann3 = Chain(
+    Conv((3, 3), 1=>64, pad=(1,1), relu),
+    Conv((3, 3), 64=>64, pad=(1,1), relu),
+    MaxPool((2,2)),
+    Conv((3, 3), 64=>128, pad=(1,1), relu),
+    Conv((3, 3), 128=>128, pad=(1,1), relu),
+    MaxPool((2,2)),
+    x -> reshape(x, :, size(x, 4)),
+    Dense(6272, 2, σ)
+)
+
+ann4 = Chain(
+    Conv((5, 5), 1=>32, pad=(2,2), relu),
+    Conv((3, 3), 32=>64, pad=(1,1), relu),
+    Conv((3, 3), 64=>128, pad=(1,1), relu),
+    MaxPool((2,2)),
+    x -> reshape(x, :, size(x, 4)),
+    Dense(128, 2, σ)
+)
+
+ann5 = Chain(
+    Conv((3, 3), 1=>64, pad=(1,1), relu),
+    Conv((3, 3), 64=>128, pad=(1,1), relu),
+    MaxPool((2,2)),
+    Conv((3, 3), 128=>256, pad=(1,1), relu),
+    MaxPool((2,2)),
+    x -> reshape(x, :, size(x, 4)),
+    Dense(256, 2, σ)
 )
 
 array_ann = []
 
-push!(array_ann, ann2)
+push!(array_ann, ann3)
 
     # Vamos a probar la RNA capa por capa y poner algunos datos de cada capa
     # Usaremos como entrada varios patrones de un batch
