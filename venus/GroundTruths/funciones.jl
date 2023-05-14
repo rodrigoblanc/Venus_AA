@@ -218,8 +218,6 @@ function count(dir::String)
 end
 
 
-#count(img_path)
-#println(num)
 
 
 function count(arr::Vector{Any})
@@ -234,7 +232,6 @@ function loadFolderImages(folderName::String)
     images = [];
     files = sort(readdir(folderName), lt=natural)
     filter!(endswith(".png"), files)
-    println(files)
     for fileName in files
         println("Loading filename: "*fileName)
         image = load(folderName*"/"*fileName);
@@ -667,7 +664,6 @@ function modelCrossValidation(model::Symbol, parameters::Dict, inputs::Array{Flo
     # Sacar los campos del modelo
     # kNN: model.n_neighbors, model.metric, model.weights 
     # SVM: model.C, model.support_vectors_, model.support_ 
-    #println(keys(model)); 
 
     if model==:ANN
         # En el caso de entrenar RR.NN.AA., salidas codificadas como en prácticas anteriores. 

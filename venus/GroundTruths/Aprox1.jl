@@ -77,6 +77,7 @@ modelHyperparameters["numExecutions"] = numRepetitions;
 modelHyperparameters["maxEpochs"] = maxEpochs;
 modelHyperparameters["maxEpochsVal"] = maxEpochsVal;
 
+println("Empezando entrenamiento...")
 
 # RNA
 

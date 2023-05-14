@@ -104,6 +104,8 @@ modelHyperparameters["maxEpochsVal"] = maxEpochsVal;
 
 # RNA
 
+println("Empezando entrenamiento...")
+
 topologies = [[3], [1], [2], [1,1], [1,2], [3,4], [2,3], [5,5]]
 
 for i in topologies
@@ -152,14 +154,3 @@ end
 
 
 close(salida)
-
-function calcularHist(img::Array{Float64, 2})
-    h = zeros(1,256);
-    println("Calculating Histogram on image with size "*string(size(img, 1))*"x"*string(size(img, 2)))
-    for x in img
-        i = round(1 + x*255, digits = 0)
-        i= Int(i)
-        h[i] = h[i]+1
-    end
-    return h
-end

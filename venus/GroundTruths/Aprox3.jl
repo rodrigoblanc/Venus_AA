@@ -16,8 +16,6 @@ cont = 1
 array = []
 
 for image in hit
-    println("Cont:")
-    println(cont)
     if(mod(cont,4) == 1)
         global array = []
     end
@@ -35,8 +33,7 @@ array = []
 second_part = []
 
 for image in miss
-    println("Cont:")
-    println(cont)
+
     if(mod(cont,4) == 1)
         global array = []
     end
@@ -123,8 +120,6 @@ saveAsData(path*"/"*"aprox3.data", dataSetAux, '\t')
 
 dataSetImportado = readdlm(path*"/"*"aprox3.data", '\t')
 
-print(dataSetAux == dataSetImportado)
-
 salida = open("resultados_aprox_3.txt", "w")
 
 numFolds = 10 
@@ -168,6 +163,7 @@ modelHyperparameters["numExecutions"] = numRepetitions;
 modelHyperparameters["maxEpochs"] = maxEpochs;
 modelHyperparameters["maxEpochsVal"] = maxEpochsVal;
 
+println("Empezando entrenamiento...")
 
 # RNA
 

@@ -39,15 +39,13 @@ for count in 1:numberOfImages
     if isfile(pattern_path*"/"*name) #Checkeamos si existe
         matrix = readdlm(pattern_path*"/"*name)
         push!(dataset, matrix)
-        #global dataset = vcat(dataset, matrix) #Concatenamos verticalmente la matriz con el dataset
     else
         push!(dataset, Float64[])
     end
-    #println(count)
+
     count = count + 1
 end
-#Printeamos el dataset original
-println(dataset[1])
+
 
 
 size_data = size(dataset, 1)
@@ -77,15 +75,7 @@ for i=1:size_data
     end
     push!(positive_dataset, aux)
 end
-#negative_dataset[i] for i=1:size_data  [dataset[i,:] for i=1:size_data if dataset[i,1]==4.0]
-#positive_dataset= [dataset[i,:] for i=1:size_data if dataset[i,1]==1.0]
-#=
-println(negative_dataset) #Se maneja con [fila][columna].
-println()
-println(positive_dataset) #Se maneja con [fila][columna].
-println()
-#Ahora mismo el dataset es una matriz con todos los patrones
-=#
+
 
 
 # Tiene todas las imagenes, 1 por fila 
@@ -100,7 +90,6 @@ negative_images = []
 
 for i=1:size_data
     for j=1:(size(negative_dataset[i], 1))
-        println(negative_dataset[i][j])
         recorte = negative_dataset[i][j][2:4]
         push!(negative_images, recortar(recorte, matrix[i]))
     end
@@ -108,24 +97,10 @@ end
 
 for i=1:size_data
     for j=1:(size(positive_dataset[i], 1))
-        println(positive_dataset[i][j])
         recorte = positive_dataset[i][j][2:4]
         push!(positive_images, recortar(recorte, matrix[i]))
     end
 end
-
-#display(positive_images[1])
-
-# Recorrer negative_dataset
-    # Para cada negative_dataset[i], aplicarle a images[i] los recortes y apilarlos en positive_images[] de la siguiente manera push!(positive_images, recorte)
-
-# matrix_c = matrix[1]
-
-# coord = [convert(UInt16,negative_dataset[1][2]), convert(UInt16,negative_dataset[1][3]), convert(UInt16,round(negative_dataset[1][4])) ] #x, y, radius
-
-# matrix_cut = matrix_c[coord[1],coord[2]]
-
-# println(matrix_cut)
 
 # Crear el directorio si no existe
 if !isdir(hit_path)
@@ -214,7 +189,7 @@ negative_images1 = []
 
 for i=1:size_data
     for j=1:(size(negative_dataset[i], 1))
-        println(negative_dataset[i][j])
+
         recorte = negative_dataset[i][j][2:4]
         push!(negative_images1, recortar(recorte, matrix[i]))
     end
@@ -222,7 +197,7 @@ end
 
 for i=1:size_data
     for j=1:(size(positive_dataset[i], 1))
-        println(positive_dataset[i][j])
+
         recorte = positive_dataset[i][j][2:4]
         push!(positive_images1, recortar(recorte, matrix[i]))
     end

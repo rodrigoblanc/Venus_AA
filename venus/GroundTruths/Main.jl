@@ -51,7 +51,7 @@ include("Preprocesado.jl")
 ########################### Selección de aproximación ##########################
 
 #AQUI SE ESCRIBE LA APROXIMACION QUE SE QUIERE EJECUTAR
-nAprox = "4"
+nAprox = "2"
 #miss_path = mycd*"Venus_AA/venus/cuts"
 
 ############################# Recortes de patrones #############################

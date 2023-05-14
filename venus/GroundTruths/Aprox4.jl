@@ -17,8 +17,6 @@ cont = 1
 array = []
 
 for image in hit
-    println("Cont:")
-    println(cont)
     if(mod(cont,4) == 1)
         global array = []
     end
@@ -36,8 +34,6 @@ array = []
 second_part = []
 
 for image in miss
-    println("Cont:")
-    println(cont)
     if(mod(cont,4) == 1)
         global array = []
     end
@@ -171,6 +167,7 @@ modelHyperparameters["numExecutions"] = numRepetitions;
 modelHyperparameters["maxEpochs"] = maxEpochs;
 modelHyperparameters["maxEpochsVal"] = maxEpochsVal;
 
+println("Empezando entrenamiento...")
 
 # RNA
 
